@@ -1,0 +1,276 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>移动端安全修炼（三） | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    移动端安全修炼（三）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2019-06-03 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/W549fs7Hpx/" class="post-tags">
+                            # 移动端安全
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="起因">起因</h2>
+<p>Android 7.0 之后 Google 默认不信任 User 域下的证书，也就是自行导入证书的方式去抓 HTTPS 包的方法已经不管用了，再加上现在大部分 App 都使用了 SSL Pinning，因此抓包的难度也比之前大了不少。此时再想抓 HTTPS 的流量就要用别的方法了。</p>
+<!-- more -->
+<p>如果你够强直接逆向了 App，然后在应用的证书信任的配置文件里添加上你的证书，那么你还是可以抓取这个 App 的流量的，但是这种方法工作量太大，针对不同的应用你还需要一个个逆向文件，成本实在太高。这里讲的方法还是相对省事省时间的方法。<strong>通过获取手机 Root 权限，将 BurpSuite 的证书导入系统域中</strong>，这样系统就会信任你的证书，达到抓取所有 App 流量的目的了。</p>
+<h2 id="方法">方法</h2>
+<p>在进行之前确保你有以下的条件：</p>
+<ol>
+<li>一部获取了 Root 权限的手机</li>
+<li>电脑有 OpenSSL 环境</li>
+</ol>
+<p>如果你有了上面的条件，下面开始开始操作</p>
+<ol>
+<li>
+<p>从 Brupsuit 中导出证书文件 cacert.der</p>
+</li>
+<li>
+<p>将 Der 的证书转换为 PEM 格式 <code>openssl x509 -in cacert.der -inform DER -out cacert.pem -outform PEM</code></p>
+</li>
+<li>
+<p>获取证书的 hash <code>openssl x509 -inform PEM -subject_hash_old -in cacert.pem | head -1</code> 记住输出的hash，例如 '9a5ba575'</p>
+</li>
+<li>
+<p>将证书内容输出到新文件中，文件名称格式为为刚刚输出的 <strong>hash + .0</strong>， <code>cat cacert.pem &gt; 9a5ba575.0</code></p>
+</li>
+<li>
+<p>将证书内容格式化后追加到刚刚生成的文件中，<code>openssl x509 -inform PEM -text -in cacert.pem -out /dev/null &gt;&gt; 9a5ba575.0</code></p>
+</li>
+<li>
+<p>将文件传入手机中<code>adb push 9a5ba575.0 /system/etc/security/cacerts/</code></p>
+</li>
+<li>
+<p>使用 ADB 连接手机，执行 <code>adb shell</code> 切换到 Root 权限，然后挂载/system, <code>mount -o rw,remount /system</code>，给你的证书文件加上权限 <code>chmod 644 /system/etc/security/cacerts/9a5ba575.0</code></p>
+</li>
+<li>
+<p>重启手机，查看证书是否安装完成</p>
+</li>
+</ol>
+<p>重启手机之后，可以去你的证书目录中查看下证书是否正常导入了，下面是正常的的状态。</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/06/04/5cf545e54a48687440.jpg" alt="photo_2019-06-04_00-07-36.jpg" loading="lazy"></figure>
+<h2 id="尾声">尾声</h2>
+<p>除了导入证书，也有其他的方法来解决这个问题，比如通过 Xposed 插件的方法来实现抓包<br>
+<a href="https://bbs.pediy.com/thread-226435.htm">如何使用Xposed+JustTrustMe来突破SSL Pinning</a><br>
+或者通过虚拟环境的的方式来抓包，比如使用 HttpCanary，好处是不需要 Root 你的手机<br>
+<a href="https://juejin.im/post/5c1e370ae51d45374272696e">手机抓包+注入黑科技HttpCanary——最强大的Android抓包注入工具</a><br>
+你可以根据自己的实际情况来选择方案。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong/" class="post-title gt-a-link">
+                    Kubernetes Api Server 未授权访问漏洞
+                </a>
+            </div>
+        
+
+        
+            <span id="/yi-dong-duan-an-quan-xiu-lian-san//" class="leancloud_visitors" data-flag-title="移动端安全修炼（三）">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>安全工具收集 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    安全工具收集
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2015-08-31 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/594cJ6VfFa/" class="post-tags">
+                            # 安全总结
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>最近做一些安全风险控制的测试，所以收集了大部分能想到找到的工具，做了一些分类，主要记录了一些工具的分类，功能以及简单介绍。方便进行查询，所有工具的介绍皆来自网络上的描述，我这只是做了个梳理收集。</p>
+<p>公司穷啊，基本上只能用开源或者破解的软件，我自己也就是个『脚本小子』的等级。</p>
+<!-- more -->
+<h2 id="测评工具分类">测评工具分类</h2>
+<h3 id="一安全测试工具">(一)安全测试工具</h3>
+<p><em>1. 脆弱性扫描工具</em></p>
+<p>脆弱性扫描工具又称安全扫描器或漏洞扫描仪，是目前应用比较广泛的安全测试工具之一，主要用于识别<strong>网络、操作系统、数据库、应用</strong>的脆弱性，给出修补建议。</p>
+<p>1)基于网络的扫描工具：通过网络实现扫描，可以看作是一钟漏洞信息收集工具，根据不同漏洞的特征，构造网络数据包，发给网络中的一个或多个目标，以判断某个特定的漏洞是否存在，能够检测防火墙、IDS等网络层设备的错误配置或者链接到网络中的网络服务器的关键漏洞。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>天镜脆弱性扫描与管理系统</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>极光远程安全评估系统</li>
+<li>榕基网络隐患扫描系统</li>
+<li>Nessus</li>
+<li>Nmap</li>
+</ol>
+<p>2)基于主机的扫描工具：通常在目标系统上安装一个代理（Agent)或者是服务（Services),以便能够访问所有的主机文件与进程，这也使得基于主机的漏洞扫描器能够扫描更多系统层面的漏洞。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>微软基线安全分析器</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>日志分析工具</li>
+<li>木马查杀工具</li>
+</ol>
+<p>3)数据库安全扫描工具：通过授权或非授权模式，自动、深入地识别数据库系统中存在的多种安全隐患，包括数据库的鉴别、授权、认证、配置等一系列安全问题，也可识别数据库系统中潜在的弱点，并依据内置的知识库对违背和不遵循数据库安全性策略的做法推荐修正措施。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>安信通数据库安全扫描工具</li>
+</ol>
+</blockquote>
+<ol start="3">
+<li>明鉴数据库弱点扫描器</li>
+<li>还有oscanner</li>
+<li>Mysqlweak</li>
+</ol>
+<p>4)Web应用安全扫描工具：通过构造多种形式的Web访问请求，远程访问目标应用特定端口的服务，记录反馈信息，并与内置的漏洞库进行匹配，判断确认Web应用程序中的安全缺陷，确认Web应用程序遭受恶意攻击的危险。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>AppScan</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>WebRavor</li>
+<li>WebInspect</li>
+<li>Acunetix Web Vulnerability Scanner</li>
+<li>N-Stealth</li>
+</ol>
+<p><em>2. 渗透测试工具</em></p>
+<p>渗透测试需要以脆弱性扫描工具扫描的结果为基础信息，结合专用的渗透测试工具开展<strong>模拟探测和入侵</strong>，判断被非法访问者利用的可能性，从而进一步判断已知的脆弱性是否真正会给系统或网络带来影响。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>流光（Fluxay)</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>Pangolin</li>
+<li>Canvas</li>
+<li>SQLMap</li>
+<li>SQLIer</li>
+<li>SQL Power Injector</li>
+<li>SQLNinja</li>
+</ol>
+<p><em>3. 静态分析工具</em></p>
+<p>静态程序分析是指使用自动化或半自动化工具软件对程序源代码进行检查，以分析程序行为的技术，广泛应用于程序的正确性检查、安全缺陷检测、程序优化等。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>FortifySCA</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>Checkmark CxSuite</li>
+<li>IBM Rational AppScan Source Edition</li>
+<li>PC-Lint</li>
+<li>KlocWork公司的K7</li>
+</ol>
+<h3 id="二测评辅助工具">(二)测评辅助工具</h3>
+<p>测评辅助工具主要实现对原始数据的采集、现状分析和趋势分析等单项功能，其输出结果可作为了解被测系统某方面特性或现状、进一步开展相关安全测试的输入，也可以直接作为系统安全评估的技术依据。</p>
+<p><em>1. 性能测试工具</em></p>
+<p>性能测试工具是通过自动化手段模拟多种正常、峰值以及异常负载条件来对系统或网络</p>
+<p>负载、强度或容量等各项性能指标进行测试的工具。性能测试可分为应用在客户端性能的测试、应用在网络上性能的测试和应用在服务器端性能的测试。</p>
+<p>常用工具：IXIA、Avalanche/Refector、BreakingPoint Systems、SamrtBits、LoadRunner等。</p>
+<p><em>2、协议分析工具</em></p>
+<p>协议分析工具是指分析网络数据包、了解信息和相关的数据包在产生和传输过程中的行为工具。此类工具既能用于合法网络管理也能用于窃取网络信息。</p>
+<p>常用工具：</p>
+<blockquote>
+<ol>
+<li>Radcom</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>Sniffer Pro</li>
+<li>Wireshark</li>
+</ol>
+<p><em>3. 物理环境检测工具</em></p>
+<p>是指对放置信息系统主要设备（服务器、网络设备、数据存储器等)的场所的物理特性进行检测所需的工具。</p>
+<p><em>4. 网络拓扑生产工具</em></p>
+<p>是通过接入点接入被测评网络，自动完成被测评网络中资产的发现和统计功能，并提供网络资产的相关信息，包括网络硬件设备的识别、操作系统版本、型号，同时自动生成拓扑结构图等。</p>
+<p>常见工具：</p>
+<blockquote>
+<p>HPOpenView</p>
+</blockquote>
+<p><em>5. 安全配置检测工具</em></p>
+<p>是按照一定的安全基线或基准安全标准，形成完整的安全配置内置知识库，实现对设备或软件安全配置的快速、有效、集中搜集，并识别与安全基线不符合的项目，形成核查报告，为进一步实施安全评估提供数据来源。</p>
+<p>常见工具：</p>
+<blockquote>
+<ol>
+<li>绿盟安全配置核查系统（NSFOCUS Benchamark Verification System,简称：NSFOCUS BVS)</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>安码科技安全配置检查系统</li>
+</ol>
+<h3 id="三测评管理工具">(三)测评管理工具</h3>
+<p>测评管理工具主要用于规范测评过程和操作方法，或者用于收集测评所需的数据和资料，并根据测评知识库和推理专家库知识库辅助测评人员进行测评结果判断。</p>
+<h2 id="常用测评工具">常用测评工具</h2>
+<p><em>1. 脆弱性扫描工具</em></p>
+<ol>
+<li>天镜脆弱性扫描与管理系统是基于网络的脆弱性分析、评估和综合管理系统，启明星辰通过总结多年的市场经验和客户需求，提出了“发现－扫描－定性－修复－审核” 弱点全面评估法则，能够快速发现网络资产，准确识别资产属性、全面扫描安全漏洞，清晰定性安全风险，给出修复建议和预防措施，并对风险控制策略进行有效审核，从而在弱点全面评估的基础上实现安全自主掌控。</li>
+</ol>
+<p>2)极光远程安全评估系统依托专业的NSFOCUS安全小组，综合运用了NSIP等多种领先技术，会自动、高效、及时、准确地发现网络资产存在的安全漏洞；尤其是可以对发现的网络资产的安全漏洞进行详细分析，并采用权威的风险评估模型将风险量化，给出专业的解决方案；最值得关注的是它可以提供Open VM（开放漏洞管理)工作流程平台，将先进的漏洞管理理念贯穿于整个产品实现过程之中。</p>
+<p>3)Nessus是一款可以运行在Linux、BSD、Solaris以及其他一些系统上的远程安全扫描软件。它是多线程、基于插入式的软件，拥有很好的GTK界面，能够完成超过1200项的远程安全检查，具有强大的报告输出能力，可以产生HTML、XML、LaTeX和ASCII文本等格式的安全报告，并且会为每一个发现的安全问题提出解决建议。</p>
+<p>4)Nmap最早于1997年9月推出，支持Linux、Windows、Solaris、BSD、Mac OS X、AmigaOS系统，采用GPL许可证，最初用于扫描开发网络连接端，确定哪些服务运行在哪些连接端，它是评估网络系统安全的重要软件，也是黑客常用的工具之一。</p>
+<p>5)微软基线安全分析器（Microsoft Baseline Security Analyzer,MBSA)是微软公司开发的安全分析软件，运行Windows系列操作系统上，可通过图形和命令行界面对本地或远程Windows类操作系统进行安全性分析，并坚持已安装的其他组件（如：Internet Information<br>
+Services（IIS)和SQL Server)，发现缺少的修补程序和存在安全漏洞；帮助用户根据Microsoft的安全建议确定其安全状态，并根据状态提供具体的修正指导。</p>
+<p>6)明鉴WEB应用弱点扫描器具有精确的“取证式”扫描功能、强大的安全审计、渗透测试功能、误报率和漏报率等各项关键指标均表现不俗。MatriXay 5.0 (2011版) 全面支持OWASP TOP 10检测，可以帮助用户充分了解WEB应用存在的安全隐患，建立安全可靠的WEB应用服务，改善并提升应用系统抗各类WEB应用攻击的能力（如：注入攻击、跨站脚本、钓鱼攻击、信息泄露、恶意编码、表单绕过、缓冲区溢出等)，协助用户满足等级保护、PCI、内控审计等相关工作。</p>
+<p>7)安信通数据库漏洞扫描系统Database Security Scan System（简称AXT-DB)支持授权检测和非授权检测两种模式，非授权检测依据数据库版本号按照选定的非授权检测策略对目标数据库进行检测，授权检测使用具有DBA权限的数据库帐户，按照选定的授权检测策略对目标数据库进行漏洞检测，并支持默认口令检测、sql注入、缓冲区溢出等专项检测；能够检测到扫描口令过于简单、权限控制、系统配置等一系列问题，能够发现Oracle、MS-SQL Server、Sybase、MySQL、DB2等主流数据库系统中存在的安全隐患，内置的知识库能够对违背和不遵循安全性策略的做法推荐修正的操作，并提供简单明了的综合报告和详细报告。</p>
+<p>8)AppSan Standard Edition（简称Appscan)是一个产品家族，包括IBM众多的应用安全扫描产品，从开发阶段的源代码扫描的AppSan Source Edition，到针对Web应用进行快速扫描的AppSan Standard Edition，以及进行安全管理和汇总整合的AppSan Enterprise Edition等，能够在Web开发、测试、维护、运营的整个生命周期中，帮助用户高新的发现、解决安全漏洞。</p>
+<p>9)WebInspect是惠普公司的一款应用安全测试工具，该软件建立在Web 2.0技术基础上，利用创新的动态安全分析技术及评估技术检查Web服务及Web应用程序的安全，惠普WebInspect提供快速扫描功能，以及准确的Web应用程序安全扫描结果；支持JavaScript，Flash，Silverlight等客户端脚本代码静态分析。</p>
+<p>10)WebRavor来自北京域安领创公司，是国内顶尖团队开发的一款Web应用安全评估产品。该产品是目前业界强悍的专注于Web应用安全弱点的评估工具，能应对各种复杂的Web应用（Web、ERP、SSL等)，全面深入发现里面存在的安全弱点；扫描策略精确针对各个数据库系统的特点，结果准确性高，误报率较低，能够支持绝大多数的主流数据库，包括：Oracle、DB2、Sybase、Informix、Microsoft SQL Server、Access和MySQL，根据不同数据库的特点进行有针对性的漏洞分析；不仅可以全自动地进行主动模式扫描，还可以在用户的干预下进行被动模式的扫描，以便对一些复杂表格和应用进行全面检测；支持SSL扫描；支持对策略的扩展，用户可以根据需要自行制定或者开发新的审计策略，包含了灵活的渗透测试模块，可根据需要定制渗透测试方法，对扫描发现的问题进一步验证。</p>
+<p><em>2. 渗透测试工具</em></p>
+<blockquote>
+<p>1)流光（Fluxay)一款功能强大的ftp、pop3解密工具，用于检测POP3/FTP主机中用户密码安全漏洞。Fluxay采用多线程检测、高效服务器流模式，可同时对多台POP3/FTP主机进行检测，最多500个线程探测，支持10个字典同时检测。</p>
+</blockquote>
+<blockquote>
+<p>2)Canvas是一款商业的安全漏洞检测工具，Canvas为渗透测试人员开发了大量的漏洞程序，还包含一个自动化的漏洞利用系统，以及一个综合性的、可靠的漏洞部署框架；内置了150个以上的漏洞利用。</p>
+</blockquote>
+<blockquote>
+<p>3)Pangolin是一款帮助渗透测试人员进行SQL注入测试的工具。Pangolin能够通过一系列非常简单的操作，达到最大化的攻击测试效果。它从检测注入开始到最后控制目标系统都给出了测试步骤。过去有许多Sql注入工具，不过有些功能不完全，支持的数据库不够多，或者是速度比较慢。但是，在Pangolin发布以后，这些问题都完满的解决。</p>
+</blockquote>
+<h1 id="尾巴">尾巴</h1>
+<p>基本上想到的就是这么多，其实Kali Linux上面集成了大部分工具，新出的2.0重新更新了工具。我这也就是个拾遗的过程，主要就是总结。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/fu-wu-qi-an-quan-pei-zhi-zhi-nan/" class="post-title gt-a-link">
+                    服务器安全配置指南
+                </a>
+            </div>
+        
+
+        
+            <span id="/an-quan-gong-ju-shou-ji//" class="leancloud_visitors" data-flag-title="安全工具收集">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

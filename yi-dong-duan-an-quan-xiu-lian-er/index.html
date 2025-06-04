@@ -1,0 +1,254 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>移动端安全修炼（二） | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    移动端安全修炼（二）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-10-15 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/W549fs7Hpx/" class="post-tags">
+                            # 移动端安全
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="前因">前因</h2>
+<p>iOS针对IAP有一个保护机制，如果使用了全局代理的方式，iOS检查到之后为了保障交易的安全性，将会拒绝IAP流程，所以是无法抓取交易数据的，以豆瓣阅读为例，未开启代理时，可以正常的进入IAP充值界面，开启代理后则会报错：</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b33606b4fbff.jpeg" alt="使用全局代理充值请求报错" loading="lazy"></figure>
+<p>但是如果使用的动态代理的模式，可以绕过iOS的检查机制，下面就介绍下具体方法（PS：在这之前，默认你已经按之前的方法将证书倒入了iPhone设备中，教程地址：<a href="http://www.shaojike.com/2017/06/20/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%AE%89%E5%85%A81/">移动端安全修炼（一）</a>）。<br>
+这里需要补充一点，新版的iOS在信任证书环节需要新增一个信任，否则无法完全抓取HTTPS数据，具体位置在「设置」—「关于手机」—「信任证书设置」，如图所示：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/06/27/5b33606b44c5b.jpeg" alt="二次信任证书位置" loading="lazy"></figure>
+<h2 id="方法">方法</h2>
+<p>先准备一个PAC文件（PAC，一个自动代理配置脚本，包含了很多使用 JavaScript 编写的规则，它能够决定网络流量走默认通道还是代理服务器通道，控制的流量类型包括：HTTP、HTTPS 和 FTP）。内容很简单：</p>
+<pre><code>function FindProxyForURL(url, host)
+{
+    if(shExpMatch(url,&quot;*.douban.com/*&quot;)){
+return &quot;PROXY 192.168.1.134:8088&quot;;
+    }
+}
+</code></pre>
+<p>这个PAC的意思是域名<code>douban.com</code>使用<code>192.168.1.134:8088</code>进行代理，保存文件为test.pac之后，需要开启一个Web服务器提供这个PAC文件的地址，这里使用Python默认的模块来开一个简单的HTTP服务，到你保存的PAC路径使用如下命令：<code>sudo python -m SimpleHTTPServer 9527 </code>，这样在你自己本机的IP地址下，就启动了一个Web服务，之后将iOS的WI-FI网络配置你的代理PAC如下：</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/06/27/5b33606adb9b5.jpeg" alt="代理配置" loading="lazy"></figure>
+<p>开启你的抓包软件，抓取你设定好的IP和端口的数据，打开豆瓣阅读进行正常的充值业务，发现不在报错而且可以抓取IAP支付流程的包了，这样就可做交易数据的安全分析了，设定和抓包详情如下：</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/06/27/5b336069a8e3e.png" alt="代理设置" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2018/06/27/5b33606b85e4f.png" alt="抓包详情" loading="lazy"></figure>
+<h2 id="尾巴">尾巴</h2>
+<p>使用该方法抓包，还是需要设备信任抓包工具的证书不管是Charles还是Burp Suite，基于HTTPS的流量抓包，证书是必备的，只不过使用动态代理的方式绕过了检查机制从而获取了想要的数据。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/qian-xi-dns-fan-she-fang-da-gong-ji/" class="post-title gt-a-link">
+                    浅析DNS反射放大攻击
+                </a>
+            </div>
+        
+
+        
+            <span id="/yi-dong-duan-an-quan-xiu-lian-er//" class="leancloud_visitors" data-flag-title="移动端安全修炼（二）">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

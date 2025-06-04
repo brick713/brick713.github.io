@@ -1,0 +1,284 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Android TV Netflix 加载卡顿问题 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Android TV Netflix 加载卡顿问题
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2025-05-31 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/g8ZI79w08h/" class="post-tags">
+                            # 流媒体
+                        </a>
+                    
+                        <a href="https://brick713.github.io/0oHxMA-WroT/" class="post-tags">
+                            # Android TV
+                        </a>
+                    
+                        <a href="https://brick713.github.io/AR-JjjQssh/" class="post-tags">
+                            # sony
+                        </a>
+                    
+                        <a href="https://brick713.github.io/VaoFqE-6JV/" class="post-tags">
+                            # Google TV
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>家里孩子在电视上看 Netflix 儿童节目的时候，经常出现加载进度卡在25%，需等待较长时间才能正常播放。分析之后，发现问题根源在于电视端的 Netflix 会用内置的 DNS 解析找到离你最近区域的节点，但如果你的<strong>代理规则中的IP覆盖不全，地域节点匹配不准</strong>的话，就会导致流量无法高效分流到代理节点，引发加载缓慢。</p>
+<p>后来在网上找到了 Netflix 官方的 GitHub 项目，提供了他们的IP地理数据（nflx-geofeed），根据这个项目结合自己的代理节点，可以定制精准分流规则，解决加载卡顿问题。</p>
+<!-- more -->
+<hr>
+<h4 id="一-第三方规则为何导致netflix卡顿">一、第三方规则为何导致Netflix卡顿？</h4>
+<ol>
+<li>
+<p><strong>规则更新滞后</strong><br>
+第三方规则集（如Dler cloud、ACL4SSR、lhie1等）通常采用通用域名匹配模式，规则一般不会变化，导致 Netflix 部分 IP 未走代理通道。</p>
+</li>
+<li>
+<p><strong>地域匹配不准</strong><br>
+默认规则不会根据你的代理 IP 匹配划分，如果你的分流使用的是香港节点，但规则没匹配香港的IP就会导致速度变慢，触发区域检测机制而引发缓冲。</p>
+</li>
+</ol>
+<hr>
+<h4 id="二-解决方案基于nflx-geofeed的精准规则定制">二、解决方案：基于nflx-geofeed的精准规则定制</h4>
+<p>Netflix官方维护的<a href="https://github.com/Netflix/nflx-geofeed"><strong>nflx-geofeed</strong></a>项目提供了全球各地区服务器IP的地理标签数据。我们可以根据自己的实际代理情况制定精细化规则。</p>
+<h5 id="步骤1提取目标区域数据"><strong>步骤1：提取目标区域数据</strong></h5>
+<p>以香港节点为例：</p>
+<ol>
+<li>访问nflx-geofeed仓库，下载<code>nflx-geofeed.csv</code>文件。</li>
+<li>使用文本工具筛选包含<code>HK</code>（香港）标签的IP段。例如：<pre><code class="language-csv">103.116.204.0/22,HK,,Netflix
+</code></pre>
+</li>
+</ol>
+<h5 id="步骤2构建openclash规则文件"><strong>步骤2：构建OpenClash规则文件</strong></h5>
+<ol>
+<li><strong>IP段规则</strong><br>
+根据Clash语法使用IP-CIDR创建规则。例如：<pre><code class="language-yaml">- IP-CIDR,103.116.204.0/22,Netflix-HK,no-resolve
+</code></pre>
+</li>
+</ol>
+<h5 id="步骤3在openclash中导入规则"><strong>步骤3：在OpenClash中导入规则</strong></h5>
+<ol>
+<li><strong>覆写规则优先执行</strong><br>
+进入OpenClash的<code>覆写设置 → 规则设置</code>，启用自定义规则并粘贴规则内容。覆写规则的优先级高于订阅规则，确保精准匹配。或者在<code>配置管理 → 编辑规则</code>中直接将规则添加到你正在使用的配置文件中。</li>
+</ol>
+<hr>
+<h4 id="四-效果验证与对比">四、效果验证与对比</h4>
+<p>把 IP 规则添加之后，如果你的分流代理速度给力，基本上就能做到秒加载了，你也可以直接用我做好的规则，<a href="https://gist.github.com/brick713/36afee91e8f36360c00213fe6e365e7d"><strong>NetflixRule</strong></a>，规则里包含了域名以及香港、新加坡、台湾、日本的 IP 集，有需要的可以拉取配置文件自己去维护，规则不仅适用于Android TV，也适用于其他设备。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/TwUjpmp7L/" class="post-title gt-a-link">
+                    Retroid Pocket3+ 开源掌机
+                </a>
+            </div>
+        
+
+        
+            <span id="/GMe_DXnbBk//" class="leancloud_visitors" data-flag-title="Android TV Netflix 加载卡顿问题">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>漏洞分析 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+        <div class="current-tag-container">
+            <h2 class="title gt-c-content-color-first">
+                #漏洞分析
+            </h2>
+        </div>
+        <div class="post-list-container">
+    <div class="post-inner">
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong/">
+                            <span class="post-title gt-c-content-color-first">Kubernetes Api Server 未授权访问漏洞</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        0x00 漏洞原因
+Kubernetes 的服务在正常启动后会开启两个端口：
+
+Localhost Port （默认8080）
+Secure Port （默认6443）
+
+这两个端口都是提供 Api Server 服务的，一个可以直接通过 Web 访问，另一个可以通过 kubectl 客户端进行调用。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2018-12-05 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong.png')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/qian-xi-dns-fan-she-fang-da-gong-ji/">
+                            <span class="post-title gt-c-content-color-first">浅析DNS反射放大攻击</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        DNS反射放大攻击分析
+前阵子业务上碰到了DDOS攻击，正好是DNS反射型的，之前只是听过，没自己处理过，仔细学习了一番之后做点记录。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2016-08-19 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/qian-xi-dns-fan-she-fang-da-gong-ji/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/qian-xi-dns-fan-she-fang-da-gong-ji.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/phpcms-authkey-xie-lu-lou-dong-fen-xi/">
+                            <span class="post-title gt-c-content-color-first">PHPCMS Authkey 泄露漏洞分析</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        PHPCMS V9 Authkey泄露漏洞
+在PHPCMS V9的版本中（现已修复）
+phpcms/phpsso\_server/phpcms/modules/phpsso/index.php
+中有一段代码如下：
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2016-03-10 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/phpcms-authkey-xie-lu-lou-dong-fen-xi/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/phpcms-authkey-xie-lu-lou-dong-fen-xi.png')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/linuxbillgates-jiang-shi-wang-luo-fen-xi/">
+                            <span class="post-title gt-c-content-color-first">Linux/BillGates僵尸网络分析</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        
+0x00起因
+前阵子在用户某台设备上检测到一个IP在向外大量的发送SSH链接请求，而且有大量的DDOS其他IP的嫌疑。很明显这个IP的机器已经被人黑了，自然需要检测原因。于是就一步步开始排查。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2015-11-05 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/linuxbillgates-jiang-shi-wang-luo-fen-xi/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/linuxbillgates-jiang-shi-wang-luo-fen-xi.png')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/wordpress-wp-all-import-cha-jian-lou-dong-fen-xi/">
+                            <span class="post-title gt-c-content-color-first">Wordpress WP All Import插件漏洞分析</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        
+0x00 插件
+Wordpress WP All Import 3.2.3 (Pro 4.0.3)插件主要功能是支持用户上传XML和CSV文件。一般这种支持上传功能的插件最最最危险的地方就是不做文件格式检测，或者是检测方法过弱易被绕过。
+该插件上传的文件可以通过
+http://&quot;+site+&quot;/wp-content/uploads/wpallimport/uploads/&quot;+up_dir+&quot;/ 路径访问。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2015-10-31 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/wordpress-wp-all-import-cha-jian-lou-dong-fen-xi/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/wordpress-wp-all-import-cha-jian-lou-dong-fen-xi.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/tomcat-manager-hou-tai-lou-dong-fen-xi/">
+                            <span class="post-title gt-c-content-color-first">Tomcat Manager 后台漏洞分析</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        0x00 起源
+之前分析某设备被入侵，一直没查出来攻击者是怎么黑掉设备的，于是对着设备一通分析。结果发现了另外一条黑进去的方法。。。当然最好是弄清楚了实际原因，附带给把这个意外的漏洞给修了，回去研究发现原因很简单。
+顺带一提，漏洞形成的原因虽然是Tomcat本身的原因，但是开发公司各种糟糕的配置是把该问题放大的帮凶。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2015-10-22 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/tomcat-manager-hou-tai-lou-dong-fen-xi/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/tomcat-manager-hou-tai-lou-dong-fen-xi.png')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://brick713.github.io/phpcms-v9-sql-zhu-ru-lou-dong/">
+                            <span class="post-title gt-c-content-color-first">PHPCMS V9 SQL注入漏洞</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        0x00 漏洞描述
+在PHPCMS V9版本（最新版本）的登录功能中，存在SQL注入漏洞，登录界面通过POST传入的data内容，解析其中的内容会作为注册、登陆、删除用户等操作的内容依据，而这些操作都会将这些数据作为数据库查询语句使用。因为代码没有做过滤，攻击者可以利用POST内容进行SQL注入。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2015-09-21 ·
+                        </time>
+                        
+                            <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tag">
+                                # 漏洞分析
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://brick713.github.io/phpcms-v9-sql-zhu-ru-lou-dong/" class="post-feature-image"
+                       style="background-image: url('https://brick713.github.io/post-images/phpcms-v9-sql-zhu-ru-lou-dong.jpeg')">
+                    </a>
+                
+            </div>
+        
+    </div>
+</div>
+        <div class="pagination-container">
+    
+    
+</div>
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>服务器安全配置指南 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    服务器安全配置指南
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2015-06-15 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/594cJ6VfFa/" class="post-tags">
+                            # 安全总结
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="安全配置小记">安全配置小记</h1>
+<p>最近接触到要配置服务器安全，所有上网查了一堆关于服务器配置的内容，收益最大的还是<strong>Wooyun</strong>的两篇关于Nginx和Apache的安全配置的文章，这里综合自己的查找的内容作了一点总结，方便自己以后配置服务器。</p>
+<p>下面就讲述下一些相关的安全配置。</p>
+  <!-- more -->
+<h2 id="规范和对象">规范和对象</h2>
+<p>针对的主要是以下一些配置：</p>
+<p>1.Apache</p>
+<p>2.Nginx</p>
+<p>3.PHP</p>
+<p>4.OpenSSL</p>
+<p>因为每台机器的功能和需求不同，所有配置需根据实际情况进行修改，如果影响设备基本功能可以酌情考虑不修改配置。</p>
+<h2 id="配置方法">配置方法</h2>
+<p>下面讲一些配置方法，有些不详细列举。</p>
+<h3 id="apache">Apache</h3>
+<p>apache的一些配置主要是通过httpd.conf来实现的，通过修改httpd.conf文件来更改配置。</p>
+<h4 id="版本更新">版本更新</h4>
+<p>查看apache版本号：httpd –v ，一般情况下，如果版本过低，那么理论上存在的漏洞也更多。</p>
+<h4 id="信息隐藏">信息隐藏</h4>
+<p>服务的一些信息是可以给攻击者提供大量的参考信息，因此适当的隐藏这些内容，能帮助保护服务器的安全。</p>
+<p>1.隐藏Apache信息</p>
+<blockquote>
+<p>ServerTokens OS　 修改为：ServerTokens Prod （在出现错误页的时候不显示服务器操作系统的名称）</p>
+</blockquote>
+<blockquote>
+<p>ServerSignature On 修改为：ServerSignature Off（不回显apache版本信息）</p>
+</blockquote>
+<p>2.改变端口信息<br>
+配置httpd.conf修改修改监听端口来防止一些内部系统被扫描<br>
+这样可以防止一些直接扫描80端口的攻击者</p>
+<blockquote>
+<p>Listen 12345（任意）</p>
+</blockquote>
+<h4 id="禁用项目">禁用项目</h4>
+<p>1.禁用Autoindex模块</p>
+<p>Autoindex是Apache的模块，当目录中没有index文件的时候能自动生成和输出目录清单，类似于ls命令。该模块会产生目录遍历问题。</p>
+<blockquote>
+<p>把&quot;LoadModule autoindex_module modules/mod_autoindex.so&quot;一行前面加上#禁止掉。</p>
+</blockquote>
+<p>2.禁用目录浏览</p>
+<blockquote>
+<p>将Options Indexes FollowSymLinks改为Options -Indexes FollowSymLinks</p>
+</blockquote>
+<p>3.禁用权限</p>
+<p>配置httpd.conf取消对上传目录的PHP执行权限</p>
+<blockquote>
+<p>&lt;Directory &quot;/var/www/html/aaa（限制目录）&quot;&gt;</p>
+</blockquote>
+<blockquote>
+<p>&lt;FilesMatch &quot;.(php|php5)$&quot;&gt;</p>
+</blockquote>
+<blockquote>
+<p>Deny from all</p>
+</blockquote>
+<blockquote>
+<p>&lt;/FilesMatch&gt;<br>
+&lt;/Directory&gt;</p>
+</blockquote>
+<p>4.禁止访问文件夹<br>
+配置httpd.conf限制禁止访问的文件夹，例如后台目录</p>
+<blockquote>
+<p>&lt;Directory &quot;/var/www/html/aaa（限制目录）&quot;&gt;</p>
+</blockquote>
+<blockquote>
+<p>Deny from all</p>
+</blockquote>
+<blockquote>
+<p>&lt;/Directory&gt;</p>
+</blockquote>
+<p>5.禁止访问IP（可选）<br>
+配置httpd.conf限制一些特殊目录的特定ip访问，如内部接口等。</p>
+<blockquote>
+<p>&lt;Directory &quot;/var/www/html/aaa&quot;&gt;</p>
+</blockquote>
+<blockquote>
+<p>Order Deny,Allow<br>
+Deny from all<br>
+Allow from 192.168.1.111<br>
+&lt;/Directory&gt;</p>
+</blockquote>
+<p>6.禁止文件访问类型（可选）<br>
+配置httpd.conf限制一些文件类型的访问，如txt的日志</p>
+<blockquote>
+<p>&lt;Files ~ &quot;.txt$&quot;&gt;</p>
+<p>Order allow,deny Deny from all</p>
+<p>&lt;/Files&gt;'</p>
+</blockquote>
+<p>7.禁止对.htaccess的支持</p>
+<blockquote>
+<p>将 AllowOverride All 改为 AllowOverride None</p>
+</blockquote>
+<h3 id="php">PHP</h3>
+<h4 id="隐藏信息">隐藏信息</h4>
+<p>1.隐藏版本信息</p>
+<blockquote>
+<p>修改/etc/php.ini  expose_php 为off</p>
+</blockquote>
+<p>2.隐藏错误信息</p>
+<blockquote>
+<p>display_errors = Off //禁止爆出错误</p>
+</blockquote>
+<p>3.隐藏启动错误信息</p>
+<blockquote>
+<p>display_startup_errors =Off</p>
+</blockquote>
+<h4 id="禁用项目-2">禁用项目：</h4>
+<p>1.禁用高危函数（开启安全模式后无需配置）</p>
+<blockquote>
+<p>disable_functions = phpinfo, get_cfg_var //禁止phpinfo和get_cfg_var等函数</p>
+</blockquote>
+<p>2.禁用远程内容获取</p>
+<blockquote>
+<p>allow_url_fopen = Off //这个关闭，就没有办法取远程内容了</p>
+</blockquote>
+<blockquote>
+<p>allow_url_include=Off</p>
+</blockquote>
+<h4 id="安全配置">安全配置</h4>
+<p>1.安全模式</p>
+<blockquote>
+<p>safe_mode = On //开启安全模式</p>
+</blockquote>
+<blockquote>
+<p>safe_mode_gid = off //</p>
+</blockquote>
+<p>2.控制可访问文件（可选）</p>
+<blockquote>
+<p>open_basedir = /usr/www（网站文件路径）</p>
+</blockquote>
+<p>3.关闭注册全局变量</p>
+<blockquote>
+<p>register_globals = Off</p>
+</blockquote>
+<p>4.防止SQL注入</p>
+<blockquote>
+<p>magic_quotes_gpc = on</p>
+</blockquote>
+<p>5.Http-only开启</p>
+<blockquote>
+<p>session.cookie_httponly = 1</p>
+</blockquote>
+<p>6.配置打印错误内容</p>
+<blockquote>
+<p>error_reporting = E_ALL&amp; ~E_NOTICE</p>
+</blockquote>
+<h3 id="openssl">OpenSSL：</h3>
+<h4 id="版本更新-2">版本更新：</h4>
+<p>及时更新OpenSSL版本避免旧版本中的高危漏洞的出现。</p>
+<h4 id="配置修改">配置修改：</h4>
+<p>修改/etc/httpd/conf.d/ssl.conf配置：</p>
+<blockquote></blockquote>
+<p>1.将SSLProtocol 设置为SSLProtocol all -SSLv2 -SSLv3<br>
+2.添加SSLHonorCipherOrder on<br>
+3.将SSLCipherSuite 设置为：ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5</p>
+<h4 id="功能关闭">功能关闭：</h4>
+<p>在 /etc/sysconfig/httpd 关闭 SSLCompression</p>
+<blockquote>
+<p>添加该语句export OPENSSL_NO_DEFAULT_ZLIB=1即可</p>
+</blockquote>
+<h3 id="ngnix">Ngnix：</h3>
+<h4 id="权限配置">权限配置</h4>
+<p>1.修改网站目录运行账户<br>
+修改所有者为非php-fpm运行账户，可修改所有者为root。<br>
+命令：</p>
+<blockquote>
+<p>chown -R root:root html/</p>
+</blockquote>
+<p>2.修改nginx及php-fpm的运行账户及组为nobody</p>
+<blockquote>
+<p>修改nginx.conf 中user 为nobody</p>
+<p>修改Php-fpm.conf 中user与group 为nobody</p>
+</blockquote>
+<p>3.修改nobody权限（可选）<br>
+取消nobody对所有目录的的读取权限，然后添加对网站目录的读取权限</p>
+<blockquote>
+<p>1.chmod o-r –R  /</p>
+<p>2.chmod o+r –R html/</p>
+</blockquote>
+<p>4.修改执行权限（可选）<br>
+取消nobody对于/bin/sh 的执行权限</p>
+<blockquote>
+<p>chmod 776 /bin/sh(需要确认网站目录对于nobody的权限为可读可执行，对网站文件的权限为可读)</p>
+</blockquote>
+<p>5.对于上传目录或者写入写文件的目录添加nobody的写入权限 （可选）</p>
+<p>6.配置nginx.conf 对于上传目录无php的执行权限</p>
+<p>7.配置nginx.conf禁止访问的文件夹，如后台，或者限制访问ip（可选）</p>
+<p>8.配置nginx.conf禁止访问的文件类型，如一些txt日志文件（可选）</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/ubuntu-server-pei-zhi-zhi-nan/" class="post-title gt-a-link">
+                    Ubuntu Server 配置指南
+                </a>
+            </div>
+        
+
+        
+            <span id="/fu-wu-qi-an-quan-pei-zhi-zhi-nan//" class="leancloud_visitors" data-flag-title="服务器安全配置指南">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Linux/BillGates僵尸网络分析 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Linux/BillGates僵尸网络分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2015-11-05 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tags">
+                            # 漏洞分析
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <!--  more  -->
+<h1 id="0x00起因">0x00起因</h1>
+<p>前阵子在用户某台设备上检测到一个IP在向外大量的发送SSH链接请求，而且有大量的DDOS其他IP的嫌疑。很明显这个IP的机器已经被人黑了，自然需要检测原因。于是就一步步开始排查。</p>
+<!-- more -->
+<h1 id="0x01检查">0x01检查</h1>
+<p>先通过<strong>Tcpdump</strong>抓了下机器的包。发现在大量的SSH包中，还存在比较大的<strong>TCP</strong>的包，而这些包都指向一个<strong>IP 183.56.173.197</strong>，把这部分包都抓下来分析下。包里内容如下：</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b33642e2cc3b.png" alt="di1.png" loading="lazy"></figure>
+<p>这个是个比较明显的和僵尸主机的CNC回传通信，应该是确认僵尸存活使用的。</p>
+<p>顺便查了下这个<strong>IP 183.56.173.197</strong>，就是一个恶意的主机节点。而且应该还是个存活的节点。</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/06/27/5b33644eaf0ff.png" alt="di2.png" loading="lazy"></figure>
+<p>查询了一下，发现这个主机节点控制一种叫<strong>Linux/BillGates.Lite</strong>僵尸网络。这种僵尸网络主要是被用来进行DDOS攻击，同样会窃取服务的文件发送给僵尸主机。当僵尸存在的时候会在机器的**/tmp/<strong>路径下生产一个标志性文件</strong>gates.lod**，于是我去路径下很快就发现了这个文件。</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/06/27/5b336465275f3.png" alt="di3.png" loading="lazy"></figure>
+<p>到此基本上就确认了是Linux/BillGates影响了该机器。</p>
+<h1 id="0x02-溯源">0x02 溯源</h1>
+<p>既然机器被人黑了，总要查下攻击者怎么进来的。<br>
+使用<code>last</code>命令看一下近期的登陆情况。发现了端倪：</p>
+<p><img src="https://i.loli.net/2018/06/27/5b336410c64eb.png" alt="di4.png" loading="lazy"><br>
+这两个IP是外网IP而且非常搞笑的是他们的地址完全和机器无关</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/06/27/5b3363eaac21d.png" alt="di5.png" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2018/06/27/5b33638e40aca.png" alt="di6.png" loading="lazy"></figure>
+<p>进来的时间也非常可疑，凌晨2点上下。很明显就是攻击者啦。至于怎么进来的，从这看应该是通过SSH暴力破解进入的机器。这个<strong>Oracle</strong>账号的密码应该是过于简单了。</p>
+<p>既然已经定位到账号了。看看他在这个时间段都干嘛了。进入用户目录/home/oracle/，查看.bash_history文件：</p>
+<figure data-type="image" tabindex="6"><img src="https://i.loli.net/2018/06/27/5b33635a86a03.png" alt="di7.png" loading="lazy"></figure>
+<p>一目了然，攻击者进来之后，先进入了**/tmp**目录，然后去僵尸主机上下载了一个可执行文件，加权后执行然后退出该账号。<br>
+这个可执行文件最后没有找到。细想一下应该是执行完后自删除了，不留痕迹。</p>
+<p>最后生成的恶意文件gates.lod，权限账户就是为oracle。</p>
+<figure data-type="image" tabindex="7"><img src="https://i.loli.net/2018/06/27/5b3363303f99e.png" alt="di8.png" loading="lazy"></figure>
+<h1 id="0x03-结论">0x03 结论</h1>
+<p>攻击者进来的方式很简单，<strong>SSH暴力破解</strong>，完成破解之后，去主机上下载可执行文件，执行后加载了僵尸病毒，最后完成自删除行为，被植入僵尸的主机会干3件事：</p>
+<ol>
+<li>继续进行SSH暴力破解获得更多僵尸</li>
+<li>进行DDOS攻击其它机器</li>
+<li>定期回传信息给控制机</li>
+</ol>
+<p>完成整个攻击，共出现了一共3个IP，这三个IP分工明确，第一个<strong>IP 182.151.213.178</strong>负责进行暴力破解，第二个<strong>IP 1.82.191.37</strong>负责连接至被暴力破解主机进行相关恶意操作，第三个<strong>IP 183.56.173.197</strong>是僵尸的控制机，负责控制僵尸。很明显前两个IP应该也是受害者。</p>
+<h1 id="0x04-尾巴">0x04 尾巴</h1>
+<p>这台机器从这次事件来看有如下弱点需要改进：</p>
+<ol>
+<li>账户密码强度太低，需要增强</li>
+<li>应该禁止外网IP进行SSH连接，或者修改连接端口。</li>
+<li>tmp目录有执行权限，最好修改tmp目录权限</li>
+</ol>
+<p>总之完成这次流程也花了一些时间，总结下来给自己留做经验吧。</p>
+<p>最后附上个连接，是详细分析Linux/BillGates的有兴趣的可以看看</p>
+<p><a href="https://0x9.me/IPCTs">MMD-0039-2015 - ChinaZ made new malware: ELF Linux/BillGates.Lite</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/wordpress-wp-all-import-cha-jian-lou-dong-fen-xi/" class="post-title gt-a-link">
+                    Wordpress WP All Import插件漏洞分析
+                </a>
+            </div>
+        
+
+        
+            <span id="/linuxbillgates-jiang-shi-wang-luo-fen-xi//" class="leancloud_visitors" data-flag-title="Linux/BillGates僵尸网络分析">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

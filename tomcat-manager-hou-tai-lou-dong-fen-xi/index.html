@@ -1,0 +1,275 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Tomcat Manager 后台漏洞分析 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Tomcat Manager 后台漏洞分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2015-10-22 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/WgbtwK_Qkc/" class="post-tags">
+                            # 漏洞分析
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="0x00-起源">0x00 起源</h1>
+<p>之前分析某设备被入侵，一直没查出来攻击者是怎么黑掉设备的，于是对着设备一通分析。结果发现了另外一条黑进去的方法。。。当然最好是弄清楚了实际原因，附带给把这个意外的漏洞给修了，回去研究发现原因很简单。</p>
+<p>顺带一提，漏洞形成的原因虽然是Tomcat本身的原因，但是开发公司各种糟糕的配置是把该问题放大的帮凶。</p>
+<!-- more -->
+<p>tomcat是一个开源Web服务器，基于Tomcat的Web运行效率高，可以在一般的硬件平台上流畅运行，因此，颇受Web站长的青睐。不过，在默认配置下其存在一定的安全隐患，可被恶意攻击。</p>
+<h1 id="0x01-问题起源">0x01 问题起源</h1>
+<p>Tomcat是一个开源Web服务器，基于Tomcat的Web运行效率高，最方便的是没有复杂的安全，解压文件就能使用，不过因为Tomcat实在太火了，被人研究的也很透彻。</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2018/06/27/5b3364f437e0e.jpeg" alt="后台界面" loading="lazy"></figure>
+<ul>
+<li>Tomcat的默认后台地址为:http://域名:端口/manager/html.</li>
+</ul>
+<p>进入之后弹出登陆对话框,Tomcat默认的用户名admin,密码为空。原因很简单，默认的配置是没有给他配置密码的，当然如果碰上密码不正确，可以试试弱口令。</p>
+<ul>
+<li>获取Webshell</li>
+</ul>
+<p>在管理界面有很多信息可以查看，<strong>包括Linux版本，Tomcat版本，相关路径等等</strong><br>
+管理界面有个模块，可以上传WAR文件。Tomcat可以解析WAR文件，能够将其解压并生成web文件。</p>
+<p>如果将一个jsp格式的webshell打包然后改名为WAR，将其上传到服务器，<br>
+然后在上传路径上打开jsp木马，这样就获得了一个Webshell。</p>
+<ul>
+<li>获取设备root权限</li>
+</ul>
+<p>Tomcat服务默认是以system权限运行的，因此该jsp木马就继承了其权限，然后可以干什么事我就不说了。</p>
+<h1 id="0x02-漏洞防范">0x02 漏洞防范</h1>
+<ol>
+<li>
+<p>修改\conf\tomacat-users.xml 把默认密码修改为强密码。</p>
+</li>
+<li>
+<p>关闭或者删除Tomcat后台 \webapps全部删除就好（简单暴力）。</p>
+</li>
+<li>
+<p>服务降权，限制Tomcat的权限。</p>
+</li>
+</ol>
+<h1 id="0x03-尾巴">0x03 尾巴</h1>
+<p>该漏洞主要是几个连环的问题引起的：</p>
+<ol>
+<li>Tomcat后台</li>
+<li>弱密码</li>
+<li>支持文件上传</li>
+<li>权限不当</li>
+</ol>
+<p>不光是Tomcat，所有的服务器都得注意以上的一些安全问题。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/phpcms-v9-sql-zhu-ru-lou-dong/" class="post-title gt-a-link">
+                    PHPCMS V9 SQL注入漏洞
+                </a>
+            </div>
+        
+
+        
+            <span id="/tomcat-manager-hou-tai-lou-dong-fen-xi//" class="leancloud_visitors" data-flag-title="Tomcat Manager 后台漏洞分析">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>国行 Sony 电视更换主板最详教程 | Brickの小黑屋</title>
+
+<link rel="shortcut icon" href="https://brick713.github.io/favicon.ico?v=1749001692545">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://brick713.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-73319140-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-73319140-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Brickの小黑屋
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1749001692545"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    国行 Sony 电视更换主板最详教程
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-05-31 ·
+                    </time>
+                    
+                        <a href="https://brick713.github.io/JxocSFTwi2/" class="post-tags">
+                            # 生活折腾
+                        </a>
+                    
+                        <a href="https://brick713.github.io/AR-JjjQssh/" class="post-tags">
+                            # sony
+                        </a>
+                    
+                        <a href="https://brick713.github.io/VaoFqE-6JV/" class="post-tags">
+                            # Google TV
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>去年双十一的时候家里添置了一台 Sony 电视，完成了一个索粉的信仰充值。在购买之前就了解到国行的 Sony 电视的系统是基于国内用户的特别定制版，在服务和 UI 上都和海外的电视有很大的不同，并且是硬件层面的定制，是无法通过刷固件切换区域这种方式来获得完整的体验。作为一个强迫症加完美主义者，在了解到可以通过更换主板的方式获得完整的服务时，于是就有了这篇文章，有了这次折腾。</p>
+<!-- more -->
+<h1 id="前因">前因</h1>
+<p>之所以会有这次更换主板的想法，主要原因如下：</p>
+<ol>
+<li>电视盒子如果没有完整的「杜比全家桶」就浪费了电视的效果，且盒子和电视部分场景下的切换使用，偶尔让人觉得抓狂；</li>
+<li>国行的电视系统没有完整的生态。虽然也有诸如当贝市场、沙发管家、Emoton store 这些第三方市场可供使用，但是生态是割裂的，应用内容也远远不够</li>
+<li>UI 界面无法接受。充斥各种广告，无效信息和强制安装应用的瀑布式界面，对于我这样的信息洁癖来说，实在无法忍受</li>
+<li>重要服务的缺失。Chromecast、Homekit、Airplay、GMS服务的缺失，让电视的功能大打折扣，虽然可以用其他方案替代，效果始终不理想</li>
+<li>系统、功能、安全补丁更新缓慢。因为定制的原因，导致一些与Google TV同步的系统更新缓慢，总是要缺失很多本来属于用户的功能更新</li>
+</ol>
+<p>基于这些原因，我开始了更换主板之旅，可能有人会问，为什么不买一个电视盒子，比如 Apple TV？因为电视本身的 Google TV 系统就可以带来媲美甚至超越电视盒子的体验了。</p>
+<h1 id="更换流程">更换流程</h1>
+<hr>
+<h2 id="购买主板">购买主板</h2>
+<p>首先我们需要购买海外的电视主板，大家可以在下面几家美国的电子零件供应商购买主板：</p>
+<ul>
+<li><a href="https://www.tvpartstoday.com">tvpartstoday</a></li>
+<li><a href="https://www.tvpartsguy.com">tvpartsguy</a></li>
+<li><a href="https://www.shopjimmy.com">shopjimmy</a></li>
+</ul>
+<p>我最后选择了 <strong>tvpartstoday</strong> 购买主板，这是一家来印第安纳州的电子零件供应商，除了主板之外还包括屏幕、驱动、背板、电源等等。你可以直接搜索你的电视型号，然后购买对应的主板，比如我的电视是型号是 <strong>XR-77A80J</strong>，直接搜索对应型号即可。</p>
+<figure data-type="image" tabindex="1"><img src="https://s2.loli.net/2022/05/31/MJtdwrDgUkS7qvR.png" alt="" loading="lazy"></figure>
+<p><strong>tvpartstoday</strong> 的购买流程并不复杂，注册账号并补充相关信息就好，稍微有一点海淘经验即可完成，我们可以使用 PayPal 或者信用卡进行结算，购买完成后就可以耐心的等待商家将主板寄给你。</p>
+<figure data-type="image" tabindex="2"><img src="https://s2.loli.net/2022/05/31/jXIsOiVZz6KAa9r.png" alt="" loading="lazy"></figure>
+<h2 id="准备工具">准备工具</h2>
+<p>主板到货之后，<strong>tvpartstoday</strong> 还会附赠一个简易的说明书，根据他的提醒我们最好提前准备一个 U 盘，并提前在 Sony 的官网中下载固件，在更换完主板后进行手动更新。</p>
+<figure data-type="image" tabindex="3"><img src="https://s2.loli.net/2022/05/31/G1NuvUbYaWPXj4i.jpg" alt="" loading="lazy"></figure>
+<p>我在更换主板的时候，成功一次点亮，并没有手动升级固件，而是配置完电视之后在线更新了系统，但是为了以防万一，这里还是推荐大家预先下载好自己电视对应的<a href="https://www.sony.com/electronics/support?cpint=d2c-supportmenu">海外固件</a></p>
+<figure data-type="image" tabindex="4"><img src="https://s2.loli.net/2022/05/31/ZGXK1pqcm9jxR5y.png" alt="" loading="lazy"></figure>
+<p>除此之外，因为海外的主板相比国行主板多两个音频口，具体的位置可能根据不同的型号略有不同，因此我们还需要准备一个电钻进行打孔，孔径大概是7MM的大小，当然为了保证拆卸的顺利我们也可以提前准备好金属卡尺或者拆机片拆卸电视后盖。</p>
+<p>当然如果你的动手能力较差或者和我一样电视尺寸过大，无法一个人完成拆卸的话，那么我建议你和我一样选择直接与本地的 Sony 售后人员联系，让 Sony 的工程师上门帮你进行更换，这样能最大程度的减少悲剧的发生，并且你的设备能得到最大程度的保护，当然 Sony 是需要收取一定的人工费用的，这里你可以对照<a href="https://service.sony.com.cn/content/casch/serviceinfo/partsprice.html">服务费用</a>)综合考虑是否需要这样的服务。</p>
+<figure data-type="image" tabindex="5"><img src="https://s2.loli.net/2022/05/31/SxMoeJpVBGdN1Lf.png" alt="" loading="lazy"></figure>
+<p>总结下来我们需要提前准备好：</p>
+<ol>
+<li>
+<p>足够容量的 U盘</p>
+</li>
+<li>
+<p>对应型号的海外固件</p>
+</li>
+<li>
+<p>7MM 钻头的电钻</p>
+</li>
+<li>
+<p>拆机片</p>
+</li>
+<li>
+<p>与本地 Sony 售后工程师沟通</p>
+</li>
+</ol>
+<h2 id="注意事项">注意事项</h2>
+<p>这里再补充一些更换过程中需要注意的事项以及事后我获得的一些信息提前告知一下大家，方便小伙伴们做最后的决策，是否有一些自己不能接受的事情。</p>
+<h3 id="保修和售后">保修和售后</h3>
+<p>作者坐标武汉，有非常方便的 Sony 售后，并且上门的工程师也非常的专业靠谱，如果你所在的区域没有比较健全的服务，那么大概率需要自己动手更换了。我的主板在付费更换完毕后，Sony 的工程师明确表示并不会影响我的电视的一年的整机保修和三年主要部件保修。师傅只是叮嘱我保留原主板，如果出现问题可以联系他们再次进行维修更换，至于不同地区是否有不同的政策，作者不得而知，但是无论如何，更换下来的主板一定要好好保存。</p>
+<h3 id="海外主板的来源">海外主板的来源</h3>
+<p>目前来看，购买的海外主板，有比较大的概率不属于 Sony 工厂原件的而是拆机件，因此 Sony 的工程师是无法将你设备原有的序列号录入到海外主板中的，只有工厂模式主板可以将序列号也就是你机身号码进行录入。上门的 Sony 工程师在进行这个操作的时候发现主板已经有了序列号也有了主板型号，但这并不影响主板本身的使用和功能，大家可以不必担心。</p>
+<h3 id="有线电视功能可能有影响">有线电视功能可能有影响</h3>
+<p>因为是海外主板，因此有线电视的功能会与国内的有线电视传输协议上可能存在一定的偏差，如果你有使用有线电视的需求，那么需要慎重考虑一下换主板是否有必要了。这里作者因为没有亲自测试过是否有影响，但是网络上有反馈可能会出现无法使用的情况，因此还是提醒一下大家风险，但要注意的是运营商的 IPTV 电视服务是不受任何影响的！</p>
+<h3 id="部分国行电视功能丧失">部分国行电视功能丧失</h3>
+<p>更换完主板后，有一些专门针对国行电视的功能就会彻底消失了，比如内置的电视应用商城、电视自带优惠活动的兑换、针对国内用户的电视会员优惠、国内流媒体的一些会员优惠。除此之外，遥控器上的流媒体快捷键也会提示找不到 App，因为内置的腾讯视频在海外系统不是内置安装的。</p>
+<h3 id="激活电视的网络需求">激活电视的网络需求</h3>
+<p>更换了主板后，电视的部分功能需要有流畅的网络方可使用，在刚开始激活电视时，因为 NTP 服务器的原因，WIFI 可能存在实际已连上但是不能联网的情况，这里进入系统设置里手动修改时间后即可解决，也可以后续通过进入开发者模式后，使用 ADB 命令修改 NTP 服务器同步地址来解决</p>
+<p>如果上述的一些事项你看过之后和作者一样都能接受，那么你就可以大胆的更换主板了。</p>
+<h2 id="更换激活">更换激活</h2>
+<p>如果你是自己更换，在断电之后，我们首先需要拆卸电视背板，不同的电视型号的背板大同小异。机身和背板主要通过卡扣连接，在卸掉固定背板的螺丝之后，需要使用拆机片或者金属卡尺慢撬开连接的卡口，这一步需要小心一点，避免撬断卡扣。成功打开背板之后，整个机身大概是这样</p>
+<figure data-type="image" tabindex="6"><img src="https://s2.loli.net/2022/05/31/FN2Y9r3CgMwsd4Z.jpg" alt="" loading="lazy"></figure>
+<p>卸掉固定主板的螺丝，并小心拆卸掉上面的排线，取下主板即可，这里别忘了对主板的挡板进行开口，前面提到过，海外的主板有多的音频接口。之后就是重新插上排线，并且固定好主板，大家也可以去B站和油管上搜索一下拆解更换视频，也许能找到对应的电视型号，跟着视频拆解会更有信心一些。</p>
+<p>更换完毕后，别着急立刻装好背板，先通电开机，看看是否能正常点亮，当我们能看到下面的画面的时候，证明一切顺利，可以放心的还原电视了！</p>
+<figure data-type="image" tabindex="7"><img src="https://s2.loli.net/2022/05/31/szjkUCDO7M1I6bf.jpg" alt="" loading="lazy"></figure>
+<p>我们可以选择使用 Google TV 或者 Base TV 模式，这里后续的设置可以根据你的实际使用情况来选择，相信能完成前面所有工作的小伙伴，后续设置上应该不会有太多困难了，唯一要提的是初次使用和激活 HomeKit 和 AirPlay2 功能时，全过程需要联网激活，你需要一个可用的海外代理，否则会一直提示 HomeKit 连接密码错误。</p>
+<figure data-type="image" tabindex="8"><img src="https://s2.loli.net/2022/05/31/ZLlheR7jx9iX8qf.jpg" alt="" loading="lazy"></figure>
+<p>当你正常接入 Homekit 之后，你就可以通过 Siri 控制电视的开关，包括使用 iPhone 虚拟遥控器控制电视了。</p>
+<figure data-type="image" tabindex="9"><img src="https://inews.gtimg.com/newsapp_bt/0/10966383371/1000" alt="" loading="lazy"></figure>
+<p>最后一步，我们还需要把校色数据导入到主板中，我们要在工厂模式（ service mode ）下，选择显示面板设定（ Panel/PQ ）——色彩参数传输（ WB/Mura/CUC data transfer ）——勾选三个参数——选择 T-con-&gt;SoC 然后执行（ Start ）。这里执行完之后，不会有界面上的反馈，我们需要直接断电让配置生效。这里是 Sony 的工程师告知我的，具体原因不详，既然工程师这么说了，照做即可。SONY 电视出厂是校色过的，色彩文件一式两份主板驱动版上各一份，可以导入导出至对方，只要不是驱动板和主板一起损坏，文件不会丢，所以至少要保证一个板子没换过才能保留色彩文件。</p>
+<p>至于如何进入工厂模式（ service mode ），有两种方式：</p>
+<ol>
+<li>
+<p>首先激活电视的开发者模式，激活方式和所有 Android 设备，在设备信息中连续点击版本号即可，之后进入开发者模式选项，开启 ADB 调试，然后就可以在同一个局域网中使用其他设备连接你的电视了。输入 ADB 命令 am start -a com.sony.dtv.intent.action.SELF_DIAG_MODE 即可进入工厂模式。</p>
+</li>
+<li>
+<p>通过遥控器进入，自带的原厂遥控器是不可以的，我们需要购买工程遥控器，型号为 TX210C，可以在淘宝上自行购买。使用工程遥控器，在电视关机的情况下，依次按下⌈5⌋【音量减】【开机】，即可进入工厂模式。</p>
+</li>
+</ol>
+<figure data-type="image" tabindex="10"><img src="https://s2.loli.net/2022/05/31/ZKWkTqMJHbG6zVr.jpg" alt="" loading="lazy"></figure>
+<p>到此，我们所有工作就做完了，下面就可以真正的完整的享受 Sony 电视的全部功能了！</p>
+<h2 id="系统体验">系统体验</h2>
+<p>更换主板完成好配置之后，我们就可以体验 Google TV 了，界面上再也没有国内冗杂烦人的广告，界面的操作逻辑也更合理。</p>
+<figure data-type="image" tabindex="11"><img src="https://s2.loli.net/2022/05/31/BZHK2cEzhsvCJjV.jpg" alt="" loading="lazy"></figure>
+<p>如果你的 IP 地址和你的 Google 账号区域相对应，电视也会给你推荐相应的内容，我们也可以自己管理在主界面上需要展示的流媒体推荐内容，主流的 Disney +、Apple TV、Prime Video、Hulu 都是支持的，但是缺失了 Netflix，希望 Google 能赶紧补全。</p>
+<figure data-type="image" tabindex="12"><img src="https://s2.loli.net/2022/05/31/Bc5Ge7VPSNFEUdr.jpg" alt="" loading="lazy"></figure>
+<p>当然最重要的收益就是，我们可以获得完整的 Google 生态，我们可以同步我们的 Google 生态下所有的服务，比如我是 YouTube Premium 的会员，我可以在电视上享受完整的服务内容，不再需要使用第三方的 YouTube 应用，我可以方便的通过 Web 端端 Google Play Store 下载和管理我的电视应用。</p>
+<figure data-type="image" tabindex="13"><img src="https://s2.loli.net/2022/05/31/K1BkJHdhi7eWvxT.png" alt="" loading="lazy"></figure>
+<p>我们也可以方便的同步我账号的密码，不再需要用遥控器傻傻的进行输入。</p>
+<figure data-type="image" tabindex="14"><img src="https://s2.loli.net/2022/05/31/FGZYD45zJpbcgns.jpg" alt="" loading="lazy"></figure>
+<p>同样也可以用上更加智能，且与生态结合的更紧密的 Google Assistant，你可以用它结合 Google 强大的搜索能力，得到几乎最精准的内容，而且支持中文！</p>
+<figure data-type="image" tabindex="15"><img src="https://s2.loli.net/2022/05/31/XAJFx3ZwPNi8Sfg.jpg" alt="" loading="lazy"></figure>
+<p>我们可以彻底告别基于 Android TV 的电视盒子，因为盒子有的功能，电视全部都可以实现，而且 Sony 电视对杜比音效、杜比全景声、杜比视界等声音特效的支持也远强于普通的电视盒子，至于其他的功能，这里就不再做赘述，大家可以自己去慢慢发觉，就不在此展开了。</p>
+<h2 id="瑕疵建议">瑕疵&amp;建议</h2>
+<p>文章的最后其实还有两个谈不上问题的小瑕疵，希望之后能够解决，第一个就是，Google TV 的 UI 界面的流畅感远远比不上 Apple TV 4k，后者在遥控器反应、系统流畅度、UI 动画上依旧是最高水平，Android 生态还有非常大的追赶空间。如果你觉得界面有卡顿感，我建议你和我一样在开发者模式中，把所有的动画时间都设置为 x2 能够极大的改善体验。</p>
+<p>另外一个瑕疵就是国行 Sony 的遥控器实在是太太太难用了。很难想象这是 Sony 设计出来的产品，没有背光，按键过于小，导致无法盲操，键位的设计也极度的不合理。这点罗永浩也在微博上吐槽过了，好在 Sony 自己也发现了问题，在新的 K 系列产品中给出了新款遥控器，可以说是全方位的升级了遥控体验，建议大家有条件可以等一等买海外的版本。</p>
+<figure data-type="image" tabindex="16"><img src="https://s2.loli.net/2022/05/31/Or1nPyR2LEIiGfb.png" alt="" loading="lazy"></figure>
+<p>那么更换主板这件事适合那些人群呢？首先需要具有爱折腾的心且能从中获得快乐的人，其次就是不想外接一个电视盒子，即使电视盒子基本上能解决80%的问题，然后还得有一些完美主义癖好，想要不断去完善自己的生活质量，最后就是具备一定的动手能力和耐心，如果上述条件你都满足，那么立刻动手吧，整个的成本在不依赖外人帮助的情况下和购买一个电视盒子的花费相差无几。</p>
+<h2 id="尾巴">尾巴</h2>
+<p>因为疫情和等待配件的原因，从获得主板到真正完成更换再到完成所有的设置，踩过了大大小小不少坑。比如最开始我这款电视在 <strong>tvpartstoday</strong> 并没有货，等了很久才有我这个型号的主板，再到朋友从国外帮我人肉带回来主板，到它完成了整个的隔离周期后，才把主板交到我手上，在疫情肆虐的今天，过去成熟的海淘也变得困难重重。但是在付出了大量的时间和精力之后，收获的回报也更让人感到满足，或许这就是折腾的快乐吧。</p>
+<p>最后感谢整个过程中所有帮助到我的人：</p>
+<ul>
+<li>我的好朋友<a href="https://timonpeng.com/">Timon Peng</a></li>
+<li><a href="https://www.v2ex.com/member/VersusClyne">V2EX上的朋友</a></li>
+<li>Sony 工程师的尽职尽责的解答</li>
+</ul>
+<p>感谢🙏</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://brick713.github.io/yi-dong-duan-an-quan-xiu-lian-san/" class="post-title gt-a-link">
+                    移动端安全修炼（三）
+                </a>
+            </div>
+        
+
+        
+            <span id="/y2xp0QCF1//" class="leancloud_visitors" data-flag-title="国行 Sony 电视更换主板最详教程">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'BPVmDnJ3m7hNIrMMJze0YXAt-gzGzoHsz',
+		appKey: '9VgKRlxWNsjLGNJsxQycFcRE',
+		avatar: 'wavatar',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: '',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">Home is Where Your Wifi Connects Automatically</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/brick713" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/YuppiesBrick" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/brick123" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://www.zhihu.com/people/brick713" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        May The Force Be With You
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://brick713.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
